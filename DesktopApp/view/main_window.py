@@ -1,5 +1,5 @@
-import ttkbootstrap as ttk
 import tkinter as tk
+import ttkbootstrap as ttk
 
 
 class MainWindow(ttk.Window):

@@ -1,4 +1,4 @@
-from View.main_window import MainWindow
+from view.main_window import MainWindow
 
 
 if __name__ == "__main__":
