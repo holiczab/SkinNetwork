@@ -19,7 +19,7 @@
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/imageButton"
+                android:id="@+id/menu"
                 android:layout_width="49dp"
                 android:layout_height="match_parent"
                 android:background="@drawable/ic_launcher" />
