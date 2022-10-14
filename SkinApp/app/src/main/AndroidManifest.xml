@@ -10,6 +10,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SkinApp">
         <activity
+            android:name=".OnlineActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OfflineActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AllDiagnosesActivity"
+            android:exported="false" />
+        <activity
             android:name=".LoadActivity"
             android:exported="false" />
         <activity
@@ -21,6 +30,7 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

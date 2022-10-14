@@ -22,7 +22,7 @@
                 android:id="@+id/imageButton"
                 android:layout_width="49dp"
                 android:layout_height="match_parent"
-                app:srcCompat="@drawable/ic_launcher" />
+                android:background="@drawable/ic_launcher" />
 
             <TextView
                 android:id="@+id/textView"
