@@ -143,7 +143,7 @@ class MainWindow(ttk.Window):
         self.upload_frame = ttk.Frame(master=self.frame_left, padding=5)
 
         self.upload_img_frame = ttk.Label(master=self.upload_frame)
-        self.upload_btn = ttk.Button(master=self.upload_frame, text="Upload...")
+        self.upload_btn = ttk.Button(master=self.upload_frame, text="Kép feltöltése...")
 
         self.logo_img_frame.configure(image=self.logo_img)
         self.upload_img_frame.configure(image=self.upload_img)
@@ -162,7 +162,7 @@ class MainWindow(ttk.Window):
 
         self.result_label = ttk.Checkbutton(
             master=self.result_frame,
-            text="Result: Melanoma",
+            text="Eredmény:\nMelanoma",
             variable=ttk.IntVar(value=1),
             onvalue=1,
             offvalue=1
@@ -172,7 +172,7 @@ class MainWindow(ttk.Window):
             master=self.result_frame,
             metertype="semi",
             textright="%",
-            subtext="Confidence",
+            subtext="Bizonyosság",
             interactive=False,
             amountused=96,
             amounttotal=100,
@@ -180,8 +180,8 @@ class MainWindow(ttk.Window):
 
         self.more_frame = ttk.Frame(master=self.frame_right, padding=5)
 
-        self.more_btn = ttk.Button(master=self.more_frame, text="More info...")
-        self.report_btn = ttk.Button(master=self.more_frame, text="Generate report...")
+        self.more_btn = ttk.Button(master=self.more_frame, text="Több információ...")
+        self.report_btn = ttk.Button(master=self.more_frame, text="Jelentés generálása...")
 
         self.result_label["bootstyle"] = "danger-outline-toolbutton"
         self.prob_meter["bootstyle"] = "danger"
