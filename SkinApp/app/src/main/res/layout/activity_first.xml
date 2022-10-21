@@ -19,6 +19,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:orientation="vertical">
 
             <TextView
@@ -28,6 +29,7 @@
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/abril_fatface"
                 android:fontFeatureSettings="smcp"
+                android:gravity="center_horizontal"
                 android:text="Start your"
                 android:textColor="#292828"
                 android:textSize="48sp"
@@ -40,6 +42,7 @@
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/abril_fatface"
                 android:fontFeatureSettings="smcp"
+                android:gravity="center_horizontal"
                 android:text="successful"
                 android:textColor="#2196F3"
                 android:textSize="48sp"
@@ -52,6 +55,7 @@
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/abril_fatface"
                 android:fontFeatureSettings="smcp"
+                android:gravity="center_horizontal"
                 android:text="medical journey!"
                 android:textColor="#292828"
                 android:textSize="48sp"
@@ -60,11 +64,11 @@
             <ImageView
                 android:id="@+id/imageView2"
                 android:layout_width="match_parent"
-                android:layout_height="400dp"
+                android:layout_height="350dp"
                 app:srcCompat="@drawable/a" />
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/btn1"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

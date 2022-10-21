@@ -19,12 +19,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/menu"
-                android:layout_width="49dp"
-                android:layout_height="match_parent"
-                android:background="@drawable/ic_back" />
-
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="385dp"

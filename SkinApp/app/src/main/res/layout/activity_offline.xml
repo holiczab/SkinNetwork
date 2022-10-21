@@ -26,11 +26,11 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/menu"
+                    android:id="@+id/backButton"
                     android:layout_width="49dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center|center_horizontal|center_vertical"
-                    android:background="@drawable/ic_back" />
+                    android:background="@drawable/ic_launcher" />
 
                 <TextView
                     android:id="@+id/textView"
@@ -41,7 +41,7 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/anton"
                     android:gravity="right"
-                    android:text="Offline Diagnoses"
+                    android:text="Diagnoses"
                     android:textColor="#292828"
                     android:textSize="34sp"
                     android:textStyle="bold" />
@@ -51,7 +51,7 @@
             <ImageView
                 android:id="@+id/imageView5"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="221dp"
                 app:srcCompat="@drawable/doctoroffline" />
 
             <TextView
@@ -77,7 +77,7 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/imageButton3"
+                    android:id="@+id/loadBtn"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:background="@drawable/ic_download" />
@@ -87,7 +87,7 @@
                     android:layout_height="20dp" />
 
                 <ImageButton
-                    android:id="@+id/imageButton4"
+                    android:id="@+id/cameraBtn"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:background="@drawable/ic_cam" />
@@ -95,7 +95,7 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_width="350dp"
-                android:layout_height="200dp"
+                android:layout_height="175dp"
                 android:layout_gravity="center"
                 app:cardBackgroundColor="#ECE8E8"
                 app:cardCornerRadius="11dp"
@@ -116,7 +116,7 @@
 
                         <Space
                             android:layout_width="match_parent"
-                            android:layout_height="39dp" />
+                            android:layout_height="27dp" />
 
                         <TextView
                             android:id="@+id/textView2"

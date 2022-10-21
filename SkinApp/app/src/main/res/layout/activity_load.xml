@@ -12,7 +12,7 @@
         android:id="@+id/imageView3"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        app:srcCompat="@drawable/b" />
+        app:srcCompat="@drawable/logo" />
 
     <TextView
         android:id="@+id/textView3"
@@ -24,7 +24,7 @@
         android:fontFeatureSettings="smcp"
         android:gravity="center"
         android:text="Loading ..."
-        android:textColor="#3F51B5"
+        android:textColor="#0F538A"
         android:textSize="34sp"
         android:textStyle="bold" />
 
@@ -34,6 +34,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        app:SpinKit_Color="#3F51B5" />
+        app:SpinKit_Color="#2196F3" />
 
 </LinearLayout>
