@@ -46,8 +46,9 @@ class Controller(object):
         :return: None
         """
 
-        path = self.view.open_files()
+        path = self.view.open_file_dialog()
         self.view.show_image(path)
+        # self.view.stop_progressbar(self.view.thread)
 
     def __more_info_button_clicked(self):
         pass

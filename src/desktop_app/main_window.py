@@ -5,6 +5,7 @@ import threading
 import tkinter as tk
 import ttkbootstrap as ttk
 
+from typing import Union
 from PIL import ImageTk, Image
 from tkinter import filedialog as fd
 from ttkbootstrap.constants import *
@@ -30,6 +31,7 @@ class MainWindow(ttk.Window):
         self.displayed_img = None
         self.window_width = None
         self.window_height = None
+        self.progress_bar_thread = None
 
         self.__set_main_window_properties()
         self.__initialize_and_configure_components()
@@ -44,16 +46,42 @@ class MainWindow(ttk.Window):
 
         input_path = "./pics/birthmark.jpg"
         self.show_image(input_path)
-        self.start_pb()
+        self.progress_bar_thread = self.start_progressbar_on_thread()
         self.mainloop()
 
-    def start_pb(self):
-        process_thread = threading.Thread(target=self.start_pb_on_thread, daemon=True)
+    def start_progressbar_on_thread(self) -> threading.Thread:
+        """
+        Creates and starts a new thread for the progressbar.
+
+        :return: None
+        """
+
+        process_thread = threading.Thread(target=self.start_progressbar, daemon=True)
         process_thread.start()
 
-    def start_pb_on_thread(self):
+        return process_thread
+
+    def start_progressbar(self) -> None:
+        """
+        Starts the progressbar in indeterminate mode.
+
+        :return: None
+        """
+
         self.progress_bar.configure(mode="indeterminate")
         self.progress_bar.start(25)
+
+    def stop_progressbar(self, thread: threading.Thread) -> None:
+        """
+        Stops the progressbar and waits for the thread to finish.
+
+        :param thread: thread of the progressbar
+        :return: None
+        """
+
+        self.progress_bar.stop()
+        thread.join()
+        self.progress_bar.configure(value=0, mode="determinate")
 
     def show_image(self, input_path: str) -> None:
         """
@@ -199,7 +227,7 @@ class MainWindow(ttk.Window):
         self.more_btn.pack(side=TOP, expand=YES, padx=5, pady=5, fill=X)
         self.report_btn.pack(side=TOP, expand=YES, padx=5, pady=5, fill=X)
 
-    def open_files(self) -> str:
+    def open_file_dialog(self) -> str:
         """
         Handles the file opening with an Open File Dialog.
 
@@ -220,6 +248,12 @@ class MainWindow(ttk.Window):
         )
 
         return filename
+
+    def open_report_dialog(self):
+        pass
+
+    def set_result_labels(self, disease_type: str, confidence: Union[str, float]):
+        pass
 
     # @staticmethod
     # def show_toast():
