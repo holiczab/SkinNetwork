@@ -12,7 +12,11 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.IOException;
 
 public class OfflineActivity extends AppCompatActivity {
 
@@ -21,19 +25,26 @@ public class OfflineActivity extends AppCompatActivity {
     Uri imageUri;
     public static final int RequestPermissionCode = 1;
     ImageButton menuButton;
+    Classifier classifier;
+    ImageView kep;
+    TextView name,percentage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_offline);
-
+        kep=findViewById(R.id.imageView5);
         loadBtn = findViewById(R.id.loadBtn);
+        name = findViewById(R.id.textView9);
+        percentage = findViewById(R.id.textView10);
+
         loadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openGallery();
             }
         });
+        classifier = new Classifier(Utils.assetFilePath(this,"mobilenet-v2.pt"));
         cameraBtn = findViewById(R.id.cameraBtn);
         cameraBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,13 +70,25 @@ public class OfflineActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == PICK_IMAGE){
             imageUri = data.getData();
-            Toast.makeText(OfflineActivity.this,""+imageUri,Toast.LENGTH_LONG).show();
-            //imageView.setImageURI(imageUri);
+            kep.setImageURI(imageUri);
+            Bitmap bitmap = null;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            name.setText(classifier.predict(bitmap)[0]);
+            percentage.setText(classifier.predict(bitmap)[1]);
+
         }
         if (requestCode == 7 && resultCode == RESULT_OK) {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-            //imageView.setImageBitmap(bitmap);
+            kep.setImageBitmap(bitmap);
+            name.setText(classifier.predict(bitmap)[0]);
+            percentage.setText(classifier.predict(bitmap)[1]);
+
         }
+
     }
     private void openCamera() {
         Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
