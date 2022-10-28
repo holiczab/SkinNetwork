@@ -13,6 +13,35 @@
         android:orientation="vertical"
         tools:context=".AllDiagnosesActivity">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/camlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <androidx.camera.view.PreviewView
+                android:id="@+id/cameraView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/result_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:text="Diagnoses"
+                android:textColor="#D31C1C"
+                android:textSize="24sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.724" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -61,9 +90,9 @@
                 android:layout_gravity="center"
                 android:fontFamily="@font/anton"
                 android:gravity="center"
-                android:text="Upload 📁 a picture or take a picture using the camera 📷 function!"
+                android:text="Upload 📁 a picture or take a picture using the camera 📷 function or use camera for live 🔴 detection!"
                 android:textColor="#201D1D"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
             <Space
                 android:layout_width="match_parent"
@@ -91,6 +120,16 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:background="@drawable/ic_cam" />
+
+                <Space
+                    android:layout_width="68dp"
+                    android:layout_height="20dp" />
+
+                <ImageButton
+                    android:id="@+id/liveBtn"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/ic_live" />
             </LinearLayout>
 
             <androidx.cardview.widget.CardView
