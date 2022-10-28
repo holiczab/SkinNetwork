@@ -1,0 +1,15 @@
+
+
+train: /content/datasets/HAM10000/images
+val: /content/datasets/HAM10000/images
+test: /content/datasets/HAM10000/test
+
+# Classes
+names:
+  0: melanocytic nevi (nv)
+  1: melanoma (mel)
+  2: benign keratosis-like lesions (bkl)
+  3: basal cell carcinoma (bcc)
+  4: actinic keratoses (akiec)
+  5: vascular lesions (vasc)
+  6: dermafofibroma (df)
