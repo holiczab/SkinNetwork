@@ -37,6 +37,7 @@ class MainWindow(ttk.Window):
         self.__initialize_and_configure_components()
         self.__place_components()
 
+    # Public non-static methods
     def show(self) -> None:
         """
         Displays the main window.
@@ -98,6 +99,32 @@ class MainWindow(ttk.Window):
         self.displayed_img = ImageTk.PhotoImage(self.source_image)
         self.img_frame.configure(image=self.displayed_img)
 
+    def open_file_dialog(self) -> str:
+        """
+        Handles the file opening with an Open File Dialog.
+
+        :return: path of opened file
+        """
+
+        filetypes = (
+            ("JPG files", "*.jpg"),
+            ("PNG files", "*.png"),
+            ("All files", "*.*")
+        )
+
+        filename = fd.askopenfilename(
+            parent=self,
+            title="Open file",
+            initialdir="../",
+            filetypes=filetypes,
+        )
+
+        return filename
+
+    def open_report_dialog(self):
+        pass
+
+    # Private non-static methods
     def __set_main_window_properties(self) -> None:
         """
         Sets the properties of the main window.
@@ -226,40 +253,3 @@ class MainWindow(ttk.Window):
         self.more_frame.pack(side=TOP, expand=YES, padx=5, pady=5, fill=NONE)
         self.more_btn.pack(side=TOP, expand=YES, padx=5, pady=5, fill=X)
         self.report_btn.pack(side=TOP, expand=YES, padx=5, pady=5, fill=X)
-
-    def open_file_dialog(self) -> str:
-        """
-        Handles the file opening with an Open File Dialog.
-
-        :return: path of opened file
-        """
-
-        filetypes = (
-            ("JPG files", "*.jpg"),
-            ("PNG files", "*.png"),
-            ("All files", "*.*")
-        )
-
-        filename = fd.askopenfilename(
-            parent=self,
-            title="Open file",
-            initialdir="../",
-            filetypes=filetypes,
-        )
-
-        return filename
-
-    def open_report_dialog(self):
-        pass
-
-    def set_result_labels(self, disease_type: str, confidence: Union[str, float]):
-        pass
-
-    # @staticmethod
-    # def show_toast():
-    #     toast = ToastNotification(
-    #         title="ttkbootstrap toast message",
-    #         message="This is a toast message",
-    #         duration=3000,
-    #     )
-    #     toast.show_toast()

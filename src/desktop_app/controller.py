@@ -21,6 +21,7 @@ class Controller(object):
 
         self.__bind_commands()
 
+    # Public non-static methods
     def mainloop(self) -> None:
         """
         The main loop of the application.
@@ -30,6 +31,7 @@ class Controller(object):
 
         self.view.show()
 
+    # Private non-static methods
     def __bind_commands(self) -> None:
         """
         Binds all commands to the components on the main window.
@@ -55,3 +57,25 @@ class Controller(object):
 
     def __generate_report_button_clicked(self):
         pass
+
+    def __update_labels(self, result: str, confidence: int) -> None:
+        """
+        Updates the feedback widgets on the main window.
+
+        :param result: name of the disease
+        :param confidence: confidence oof the classification
+        :return: None
+        """
+
+        self.view.result_label.configure(text="Result:\n{}".format(result))
+        self.view.prob_meter.configure(amountused=confidence * 100)
+
+        if confidence >= 0.9:
+            bootstyle = "danger"
+        elif 0.8 <= confidence < 0.9:
+            bootstyle = "warning"
+        else:
+            bootstyle = "success"
+
+        self.view.result_label["bootstyle"] = bootstyle
+        self.view.prob_meter["bootstyle"] = bootstyle
