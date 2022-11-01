@@ -1,4 +1,5 @@
 from main_window import MainWindow
+from model import Model
 
 
 class Controller(object):
@@ -7,7 +8,7 @@ class Controller(object):
 
     """
 
-    def __init__(self, view: MainWindow) -> None:
+    def __init__(self, view: MainWindow, model: Model) -> None:
         """
         Constructor of the Controller class.
 
@@ -18,7 +19,7 @@ class Controller(object):
         super(Controller, self).__init__()
 
         self.view = view
-
+        self.model = model
         self.__bind_commands()
 
     # Public non-static methods
@@ -49,7 +50,9 @@ class Controller(object):
         """
 
         path = self.view.open_file_dialog()
-        self.view.show_image(path)
+        if path != "":
+            # self.view.show_image(path)
+            self.view.show_image_file(self.model.open_image(path))
         # self.view.stop_progressbar(self.view.thread)
 
     def __more_info_button_clicked(self):

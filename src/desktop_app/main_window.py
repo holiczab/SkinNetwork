@@ -84,6 +84,16 @@ class MainWindow(ttk.Window):
         thread.join()
         self.progress_bar.configure(value=0, mode="determinate")
 
+    def show_image_file(self, image_to_open: ImageTk.PhotoImage):
+        """
+        Displays the image contained in Model
+
+        :param image_to_open: image to open
+        :return:
+        """
+        self.displayed_img = image_to_open
+        self.img_frame.configure(image=self.displayed_img)
+
     def show_image(self, input_path: str) -> None:
         """
         Displays an image in the middle section of the main window.
