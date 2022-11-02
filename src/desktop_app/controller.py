@@ -13,6 +13,7 @@ class Controller(object):
         Constructor of the Controller class.
 
         :param view: an instance of MainWindow
+        :param model: an instance of Model
         :return: None
         """
 
@@ -58,8 +59,17 @@ class Controller(object):
     def __more_info_button_clicked(self):
         pass
 
-    def __generate_report_button_clicked(self):
-        pass
+    def __generate_report_button_clicked(self) -> None:
+        """
+        Handles the report generation button clicked event.
+
+        :return: None
+        """
+
+        path = self.view.open_report_dialog()
+        if path != "":
+            self.model.save_report(path)
+            # Could do: self.view.report_generated_successfully_popup
 
     def __update_labels(self, result: str, confidence: int) -> None:
         """
@@ -70,6 +80,7 @@ class Controller(object):
         :return: None
         """
 
+        result = self.model.result  # json-like data
         self.view.result_label.configure(text="Result:\n{}".format(result))
         self.view.prob_meter.configure(amountused=confidence * 100)
 
