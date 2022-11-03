@@ -31,25 +31,34 @@ class Model:
         :param opened_image: The image opened in open_image() with the built-in function open()
         :return: Currently None, could change if we get an acknowledgement/result from server
         """
-        fh = {"image": opened_image}
-        address = "http://127.0.0.1:8080"
-        resp = rqs.get(address, files=fh, headers={"client": "desktop"})
+
+        json_data = json.dumps(np.array(opened_image).tolist())
+        fh = json.dumps({"files": {"image": json_data}})
+        address = "http://127.0.0.1:8080/predict"
+        resp = rqs.get(address, json=fh, headers={"client": "desktop"})
+        if resp.headers["success"]:
+            # All good
+            print("Minden oke")
+        else:
+            print("Valami felrement")
         # wait_for_result
 
     def __wait_for_result(self) -> bool:
         pass
 
-    def __open_image(self, input_path: str) -> ImageTk.PhotoImage:
+    def open_image(self, input_path: str) -> ImageTk.PhotoImage:
         """
         Opens image. First for sending the data, second, for visualising it. # Might change later
 
         :param input_path: Path to the file
         :return: The PIL image for the View
-        """
-        with open(input_path) as img:
-            self.send_data(img)
 
+        with open(input_path, encoding="utf8") as img:
+            image = img.read()
+            self.send_data(img)
+        """
         with Image.open(input_path) as img:
+            self.send_data(img)
             self.image = img
             self.image.thumbnail((600, 600), Image.ANTIALIAS)
             return ImageTk.PhotoImage(self.image)
