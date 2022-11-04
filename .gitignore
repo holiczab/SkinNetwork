@@ -1,9 +1,4 @@
 
-.idea/
-*.png
-*.jpg
-*.jpeg
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -80,6 +75,9 @@ docs/_build/
 # PyBuilder
 target/
 
+# PyCharm
+.idea/
+
 # Jupyter Notebook
 .ipynb_checkpoints
 
@@ -133,3 +131,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Other extensions
+*.png
+*.jpg
+*.jpeg
+
