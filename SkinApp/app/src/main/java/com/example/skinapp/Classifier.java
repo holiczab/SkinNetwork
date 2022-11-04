@@ -32,7 +32,8 @@ public class Classifier {
     public Tensor preprocess(Bitmap bitmap, int size){
 
         bitmap = Bitmap.createScaledBitmap(bitmap,size,size,false);
-        return TensorImageUtils.bitmapToFloat32Tensor(bitmap,this.mean,this.std);
+        return TensorImageUtils.bitmapToFloat32Tensor(bitmap,
+                TensorImageUtils.TORCHVISION_NORM_MEAN_RGB, TensorImageUtils.TORCHVISION_NORM_STD_RGB);
 
     }
 
@@ -41,7 +42,7 @@ public class Classifier {
         int maxIndex = -1;
         float maxvalue = 0.0f;
 
-        for (int i = 0; i < inputs.length; i++){
+        for (int i = 0; i < 7; i++){ //inputs.length
 
             if(inputs[i] > maxvalue) {
 
@@ -56,16 +57,19 @@ public class Classifier {
 
     public String[] predict(Bitmap bitmap){
 
-        Tensor tensor = preprocess(bitmap,224);
-
-        IValue inputs = IValue.from(tensor);
-        Tensor outputs = model.forward(inputs).toTensor();
-        float[] scores = outputs.getDataAsFloatArray();
+        Tensor tensor = preprocess(bitmap,480);
+        IValue[] outputTensor = model.forward(IValue.from(tensor)).toTuple();
+        float[] scores = outputTensor[0].toTensor().getDataAsFloatArray();
+        Log.i("Mytag", String.valueOf(scores.length));
         int classIndex = argMax(scores)[0];
-
+        /*
+        String g="";
         for (int j=0;j<scores.length;j++)
-            Log.i("Mytag", String.valueOf(scores[j]));
-
+        {
+            g+=" "+scores[j]+",";
+        }
+        Log.i("Mytag", g);
+        */
         String[] a={Constants.IMAGENET_CLASSES[classIndex],argMax(scores)[1]+" %"};
         return a;
 

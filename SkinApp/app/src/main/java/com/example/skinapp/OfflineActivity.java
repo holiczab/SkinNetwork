@@ -17,6 +17,7 @@ import androidx.lifecycle.LifecycleOwner;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -47,6 +48,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -115,10 +117,30 @@ public class OfflineActivity extends AppCompatActivity {
                 inputStream.close();
                 outputStream.close();
             }
+            //module = Module.load(OfflineActivity.assetFilePath(getApplicationContext(), "small.pt"));
+            //module = LiteModuleLoader.load(modelFile.getAbsolutePath());
             module = Module.load(modelFile.getAbsolutePath());
         }
         catch (IOException e){
             e.printStackTrace();
+        }
+    }
+    public String assetFilePath(String assetName) throws IOException {
+        File file = new File(this.getFilesDir(), assetName);
+        if (file.exists() && file.length() > 0) {
+            return file.getAbsolutePath();
+        }
+
+        try (InputStream is = this.getAssets().open(assetName)) {
+            try (OutputStream os = new FileOutputStream(file)) {
+                byte[] buffer = new byte[4 * 1024];
+                int read;
+                while ((read = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, read);
+                }
+                os.flush();
+            }
+            return file.getAbsolutePath();
         }
     }
 
@@ -166,14 +188,16 @@ public class OfflineActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_offline);
-        imagenet_classes=LoadClasses("imagenet-classes.txt");
+        //imagenet_classes=LoadClasses("imagenet-classes.txt");
+        imagenet_classes=LoadClasses("small.txt");
         previewView=findViewById(R.id.cameraView);
         textView=findViewById(R.id.result_text);
         camlay=findViewById(R.id.camlay);
         if(!checkPermissions()){
             ActivityCompat.requestPermissions(this,REQUIRED_PERMISSIONS,REQUEST_CODE_PERMISSION);
         }
-        LoadTorchModule("mobilenet-v2.pt");
+        //LoadTorchModule("mobilenet-v2.pt");
+        LoadTorchModule("best.torchscript");
         cameraProviderFuture=ProcessCameraProvider.getInstance(this);
         cameraProviderFuture.addListener(()-> {
             try {
@@ -203,7 +227,8 @@ public class OfflineActivity extends AppCompatActivity {
                 openGallery();
             }
         });
-        classifier = new Classifier(Utils.assetFilePath(this,"mobilenet-v2.pt"));
+        //classifier = new Classifier(Utils.assetFilePath(this,"mobilenet-v2.pt"));
+        classifier = new Classifier(Utils.assetFilePath(this,"best.torchscript"));
         cameraBtn = findViewById(R.id.cameraBtn);
         cameraBtn.setOnClickListener(new View.OnClickListener() {
             @Override

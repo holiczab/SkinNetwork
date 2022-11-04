@@ -1,7 +1,16 @@
 package com.example.skinapp;
 
 public class Constants {
-
+    public static String[] IMAGENET_CLASSES = new String[]{
+            "melanocytic nevi (nv)",
+            "melanoma (mel)",
+            "benign keratosis-like lesions (bkl)",
+            "basal cell carcinoma (bcc)",
+            "actinic keratoses (akiec)",
+            "vascular lesions (vasc)",
+            "dermafofibroma (df)"
+    };
+    /*
     public static String[] IMAGENET_CLASSES = new String[]{
             "tench, Tinca tinca",
             "goldfish, Carassius auratus",
@@ -1003,5 +1012,5 @@ public class Constants {
             "bolete",
             "ear, spike, capitulum",
             "toilet tissue, toilet paper, bathroom tissue"
-    };
+    };*/
 }
