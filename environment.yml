@@ -3,8 +3,12 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - fpdf=1.7.2
+  - numpy=1.23.4
+  - opencv=4.6.0
   - pip=22.2.2
   - python=3.10.6
+  - requests=2.28.1
   - pip:
     - pillow==9.2.0
     - tk==0.1.0
