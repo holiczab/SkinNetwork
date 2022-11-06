@@ -1,6 +1,6 @@
+import base64
 from flask import Flask, request,Response
 from load import *  # type: ignore
-import sys
 from ai.model import do_inference
 import json
 
@@ -11,7 +11,6 @@ app = Flask(__name__)
 def predict():
     
     headers = request.headers
-
     img_data = request.files["image"]
     pred_str: str = do_inference(img_data,headers)
     
@@ -22,4 +21,4 @@ def predict():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8080)
+    app.run(host="0.0.0.0", debug=True, port=8080)

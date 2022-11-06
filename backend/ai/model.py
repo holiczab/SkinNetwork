@@ -4,11 +4,11 @@ from PIL import Image
 import numpy as np
 import onnxruntime as ort  # type: ignore
 
-from utils import RESOURCES_PATH
+from utils import *
 
-INPUT_SHAPE: List[int] = [640, 640]  # yolov5l input size
-ONNX_PATH: Path = Path("/Users/zsomborcsurilla/Documents/elte_msc/2022_osz/halszte/SkinNetwork/backend/resources/yolov5l_ham10000.onnx")
-
+INPUT_SHAPE: List[int] = [640, 640, 3]  # yolov5l input size
+ONNX_PATH: Path = Path(RESOURCES_PATH / "small.onnx")
+OBJECTNESS_CONFIDENCE_THRESHOLD: int = 0.5
 CLASS_MAPPING: dict[int, str] = {
     0: "dont know / healthy",
     1: "Melanocytic nevi",
@@ -37,23 +37,31 @@ def preprocess_img(img_data: str,headers: Dict[str,str]) -> np.ndarray:
         img: np.ndarray = convert_encoded_image(img_data)
         
     img = np.resize(img, INPUT_SHAPE)
+    img = np.transpose(img,(2,0,1))
+    img = img[None,:]
+    
     return img
 
 def convert_encoded_image(img_data: str) -> np.ndarray:
     
-    pil_img = Image.open(img_data)
+    pil_img = Image.open(img_data).convert("RGB")
     img = np.asarray(pil_img, dtype=np.float32)
     return img
     
 
 def predict(img: np.ndarray) -> np.ndarray:
 
-    ort_pred = ort_session.run(output_names=None, input_feed={"onnx::Reshape_0": img})
+    ort_pred = ort_session.run(output_names=None, input_feed={"images": img})
     return ort_pred[0]
 
 
 def postprocess_prediction(ort_pred: np.ndarray) -> str:
-
+    #yolov5 output last dimension - [xywh,objectness,class confidences]
+    pred = ort_pred.squeeze()
+    pred = pred[pred[:,5] > OBJECTNESS_CONFIDENCE_THRESHOLD]
+    class_confidences = pred[:,5:]
+    max_indices = np.argmax(class_confidences,axis=1)
+    
     class_num = np.argmax(ort_pred, axis=0)
     class_str = CLASS_MAPPING[class_num]
     return class_str
@@ -61,7 +69,7 @@ def postprocess_prediction(ort_pred: np.ndarray) -> str:
 
 def do_inference(img_data: str,headers: Dict[str,str]) -> str:
 
-    img = preprocess_img(img_data,headers)
+    img = preprocess_img(img_data,headers)    
     network_prediction = predict(img)
     class_str = postprocess_prediction(network_prediction)
     return class_str
