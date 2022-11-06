@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-
+import android.util.Base64;
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -19,12 +21,18 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -35,18 +43,73 @@ import java.util.Date;
 
 public class OnlineActivity extends AppCompatActivity {
 
-    ImageButton menuButton,pdfButton;
+    ImageButton menuButton,pdfButton,sendBtn;
     int pageHeight = 1120;
     int pagewidth = 792;
-
+    Uri imageUri;
     Bitmap bmp, scaledbmp;
+    ImageView kep;
 
     // constant code for runtime permissions
     private static final int PERMISSION_REQUEST_CODE = 200;
+    private static final int PICK_IMAGE = 100;
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE){
+            imageUri = data.getData();
+            kep.setImageURI(imageUri);
+            Bitmap bitmap = null;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream .toByteArray();
+
+            String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            String address="http://127.0.0.1:8080/predict";
+
+
+            /*
+            resp = rqs.get(address, json=fh, headers={"client": "desktop"})
+            if resp.headers["success"]:
+            # All good
+            print("Minden oke")
+            else:
+                print("Valami felrement")
+            # wait_for_result
+             */
+
+
+
+        }
+        if (requestCode == 7 && resultCode == RESULT_OK) {
+            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+            kep.setImageBitmap(bitmap);
+
+        }
+
+    }
+    private void openCamera() {
+        Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, 7);
+    }
+    private void openGallery() {
+        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+        startActivityForResult(gallery, PICK_IMAGE);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_online);
+        sendBtn=findViewById(R.id.sendBtn);
+        kep=findViewById(R.id.imageView5);
         bmp = BitmapFactory.decodeResource(getResources(), R.drawable.skin);
         scaledbmp = Bitmap.createScaledBitmap(bmp, 140, 140, false);
         if (checkPermission()) {
@@ -54,7 +117,29 @@ public class OnlineActivity extends AppCompatActivity {
         } else {
             requestPermission();
         }
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        openCamera();
+                        break;
 
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        openGallery();
+                        break;
+                }
+            }
+        };
+
+        sendBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                builder.setMessage("Are you sure?").setPositiveButton("Camera", dialogClickListener)
+                        .setNegativeButton("Gallery", dialogClickListener).show();
+            }
+        });
         menuButton = findViewById(R.id.backButton);
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override

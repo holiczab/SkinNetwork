@@ -50,7 +50,7 @@
 
             <ImageView
                 android:id="@+id/imageView5"
-                android:layout_width="match_parent"
+                android:layout_width="400dp"
                 android:layout_height="100dp"
                 app:srcCompat="@drawable/skin" />
 
@@ -261,13 +261,23 @@
                 android:orientation="horizontal">
 
                 <ImageButton
+                    android:id="@+id/sendBtn"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/ic_download" />
+
+                <Space
+                    android:layout_width="50dp"
+                    android:layout_height="20dp" />
+
+                <ImageButton
                     android:id="@+id/loadBtn"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:background="@drawable/ic_save" />
 
                 <Space
-                    android:layout_width="68dp"
+                    android:layout_width="50dp"
                     android:layout_height="20dp" />
 
                 <ImageButton
@@ -277,7 +287,7 @@
                     android:background="@drawable/ic_mail" />
 
                 <Space
-                    android:layout_width="68dp"
+                    android:layout_width="50dp"
                     android:layout_height="20dp" />
 
                 <ImageButton
@@ -285,6 +295,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:background="@drawable/ic_pdf" />
+
             </LinearLayout>
 
         </LinearLayout>
