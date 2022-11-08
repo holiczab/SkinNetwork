@@ -37,11 +37,18 @@ class Model:
         address = "http://127.0.0.1:8080/predict"
         resp = rqs.get(address, json=fh, headers={"client": "desktop"})
         if resp.headers["success"]:
-            # All good
-            print("Minden oke")
+            self.result = resp.json()
         else:
-            print("Valami felrement")
-        # wait_for_result
+            self.result = None
+
+    def save_report(self, path: str) -> bool:
+        """
+        Saving the report.
+
+        :param path: Output path
+        :return: Success
+        """
+        pass
 
     def __wait_for_result(self) -> bool:
         pass
@@ -58,16 +65,7 @@ class Model:
             self.send_data(img)
         """
         with Image.open(input_path) as img:
-            self.send_data(img)
+            self.send_data(img)  # Might not be the best place for it if we want to open img while waiting for response
             self.image = img
             self.image.thumbnail((600, 600), Image.ANTIALIAS)
             return ImageTk.PhotoImage(self.image)
-
-    def __save_report(self, path: str) -> bool:
-        """
-        Saving the report.
-
-        :param path: Output path
-        :return: Success
-        """
-        pass

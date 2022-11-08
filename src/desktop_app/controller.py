@@ -54,6 +54,14 @@ class Controller(object):
         if path != "":
             # self.view.show_image(path)
             self.view.show_image_file(self.model.open_image(path))
+            if self.model.result is not None:
+                # Successful classification
+                # Result ought to be a json. (for details ask Zsombor)
+                pass
+            else:
+                # Error popup or something
+                # Optionally image opening could come here instead before the if, idk
+                pass
         # self.view.stop_progressbar(self.view.thread)
 
     def __more_info_button_clicked(self):
