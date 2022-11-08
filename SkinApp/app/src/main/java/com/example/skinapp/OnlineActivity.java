@@ -62,8 +62,8 @@ public class OnlineActivity extends AppCompatActivity {
     // constant code for runtime permissions
     private static final int PERMISSION_REQUEST_CODE = 200;
     private static final int PICK_IMAGE = 100;
-    public String postUrl= "hhttp://127.0.0.1:8080/predict";
-    public String postBody= "{\n pic:";
+    public String postUrl= "http://" + "127.0.0.1" + ":" + 8080 + "/predict";
+    public String postBody= "{\n image:";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     @Override
@@ -104,27 +104,42 @@ public class OnlineActivity extends AppCompatActivity {
         }
 
     }
+
     void postRequest(String postUrl,String postBody) throws IOException {
 
         OkHttpClient client = new OkHttpClient();
-
         RequestBody body = RequestBody.create(JSON,postBody);
-
         Request request = new Request.Builder()
+                .header("client", "mobile")
                 .url(postUrl)
                 .post(body)
-                .header("client", "mobile")
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                call.cancel();
+            public void onFailure(final Call call, final IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(OnlineActivity.this,
+                                "Something went wrong:" + " " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        call.cancel();
+                    }
+                });
             }
-
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.d("TAG",response.body().string());
+            public void onResponse(Call call, final Response response) throws IOException {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Toast.makeText(OnlineActivity.this,
+                                    response.body().string(), Toast.LENGTH_LONG).show();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
             }
         });
     }
