@@ -62,7 +62,9 @@ public class OnlineActivity extends AppCompatActivity {
     // constant code for runtime permissions
     private static final int PERMISSION_REQUEST_CODE = 200;
     private static final int PICK_IMAGE = 100;
-
+    public String postUrl= "hhttp://127.0.0.1:8080/predict";
+    public String postBody= "{\n pic:";
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -79,35 +81,12 @@ public class OnlineActivity extends AppCompatActivity {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
             byte[] byteArray = byteArrayOutputStream .toByteArray();
-
-            String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-            // creating a client
-            OkHttpClient okHttpClient = new OkHttpClient();
-            // building a request
-            Request request = new Request.Builder().url("http://127.0.0.1:8080/predict").build();
-            // making call asynchronously
-            okHttpClient.newCall(request).enqueue(new Callback() {
-                @Override
-                // called if server is unreachable
-                public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(OnlineActivity.this, "server down", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-                @Override
-                // called if we get a
-                // response from the server
-                public void onResponse(
-                        @NotNull Call call,
-                        @NotNull Response response)
-                        throws IOException { Log.i("Mytag",response.body().string());
-                }
-            });
-
+            postBody += Base64.encodeToString(byteArray, Base64.DEFAULT)+"}";
+            try {
+                postRequest(postUrl,postBody);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             /*
             resp = rqs.get(address, json=fh, headers={"client": "desktop"})
             if resp.headers["success"]:
@@ -117,9 +96,6 @@ public class OnlineActivity extends AppCompatActivity {
                 print("Valami felrement")
             # wait_for_result
              */
-
-
-
         }
         if (requestCode == 7 && resultCode == RESULT_OK) {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
@@ -128,6 +104,31 @@ public class OnlineActivity extends AppCompatActivity {
         }
 
     }
+    void postRequest(String postUrl,String postBody) throws IOException {
+
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody body = RequestBody.create(JSON,postBody);
+
+        Request request = new Request.Builder()
+                .url(postUrl)
+                .post(body)
+                .header("client", "mobile")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.d("TAG",response.body().string());
+            }
+        });
+    }
+
     private void openCamera() {
         Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(intent, 7);
