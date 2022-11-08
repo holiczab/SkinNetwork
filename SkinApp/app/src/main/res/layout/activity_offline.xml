@@ -10,6 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#ffffff"
         android:orientation="vertical"
         tools:context=".AllDiagnosesActivity">
 
@@ -80,7 +81,7 @@
             <ImageView
                 android:id="@+id/imageView5"
                 android:layout_width="match_parent"
-                android:layout_height="221dp"
+                android:layout_height="246dp"
                 app:srcCompat="@drawable/doctoroffline" />
 
             <TextView
@@ -90,7 +91,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="@font/anton"
                 android:gravity="center"
-                android:text="Upload 📁 a picture or take a picture using the camera 📷 function or use camera for live 🔴 detection!"
+                android:text="Upload 📁 a picture or take a picture using the camera 📷 function!"
                 android:textColor="#201D1D"
                 android:textSize="20sp" />
 
@@ -123,13 +124,15 @@
 
                 <Space
                     android:layout_width="68dp"
-                    android:layout_height="20dp" />
+                    android:layout_height="20dp"
+                    android:visibility="gone" />
 
                 <ImageButton
                     android:id="@+id/liveBtn"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:background="@drawable/ic_live" />
+                    android:background="@drawable/ic_live"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <androidx.cardview.widget.CardView

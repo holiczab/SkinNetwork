@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -32,6 +33,8 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,6 +43,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class OnlineActivity extends AppCompatActivity {
 
@@ -49,7 +59,6 @@ public class OnlineActivity extends AppCompatActivity {
     Uri imageUri;
     Bitmap bmp, scaledbmp;
     ImageView kep;
-
     // constant code for runtime permissions
     private static final int PERMISSION_REQUEST_CODE = 200;
     private static final int PICK_IMAGE = 100;
@@ -72,8 +81,32 @@ public class OnlineActivity extends AppCompatActivity {
             byte[] byteArray = byteArrayOutputStream .toByteArray();
 
             String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-            String address="http://127.0.0.1:8080/predict";
 
+            // creating a client
+            OkHttpClient okHttpClient = new OkHttpClient();
+            // building a request
+            Request request = new Request.Builder().url("http://127.0.0.1:8080/predict").build();
+            // making call asynchronously
+            okHttpClient.newCall(request).enqueue(new Callback() {
+                @Override
+                // called if server is unreachable
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(OnlineActivity.this, "server down", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                @Override
+                // called if we get a
+                // response from the server
+                public void onResponse(
+                        @NotNull Call call,
+                        @NotNull Response response)
+                        throws IOException { Log.i("Mytag",response.body().string());
+                }
+            });
 
             /*
             resp = rqs.get(address, json=fh, headers={"client": "desktop"})
@@ -103,7 +136,6 @@ public class OnlineActivity extends AppCompatActivity {
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         startActivityForResult(gallery, PICK_IMAGE);
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,7 +168,7 @@ public class OnlineActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                builder.setMessage("Are you sure?").setPositiveButton("Camera", dialogClickListener)
+                builder.setMessage("Where do you want to get the picture from?").setPositiveButton("Camera", dialogClickListener)
                         .setNegativeButton("Gallery", dialogClickListener).show();
             }
         });

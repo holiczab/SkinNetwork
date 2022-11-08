@@ -21,6 +21,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
+import android.media.Image;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,15 +44,11 @@ import com.example.skinapp.ml.Model;
 import com.example.skinapp.ml.Model2;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import org.pytorch.IValue;
-//import org.pytorch.LiteModuleLoader;
-import org.pytorch.Module;
-import org.pytorch.Tensor;
-import org.pytorch.torchvision.TensorImageUtils;
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -69,7 +70,6 @@ public class OfflineActivity extends AppCompatActivity {
     Uri imageUri;
     public static final int RequestPermissionCode = 1;
     ImageButton menuButton,liveBtn;
-    Classifier classifier;
     ImageView kep;
     TextView name,percentage;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
@@ -91,6 +91,31 @@ public class OfflineActivity extends AppCompatActivity {
         }
         return true;
     }
+    private Bitmap toBitmap(Image image) {
+        Image.Plane[] planes = image.getPlanes();
+        ByteBuffer yBuffer = planes[0].getBuffer();
+        ByteBuffer uBuffer = planes[1].getBuffer();
+        ByteBuffer vBuffer = planes[2].getBuffer();
+
+        int ySize = yBuffer.remaining();
+        int uSize = uBuffer.remaining();
+        int vSize = vBuffer.remaining();
+
+        byte[] nv21 = new byte[ySize + uSize + vSize];
+        //U and V are swapped
+        yBuffer.get(nv21, 0, ySize);
+        vBuffer.get(nv21, ySize, vSize);
+        uBuffer.get(nv21, ySize + vSize, uSize);
+
+        YuvImage yuvImage = new YuvImage(nv21, ImageFormat.NV21, image.getWidth(), image.getHeight(), null);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        yuvImage.compressToJpeg(new Rect(0, 0, yuvImage.getWidth(), yuvImage.getHeight()), 75, out);
+
+        byte[] imageBytes = out.toByteArray();
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+    }
+
+
     Executor executor= Executors.newSingleThreadExecutor();
     void startCamera(@NonNull ProcessCameraProvider cameraProvider){
         Preview preview = new Preview.Builder().build();
@@ -102,113 +127,38 @@ public class OfflineActivity extends AppCompatActivity {
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build();
         imageAnalysis.setAnalyzer(executor, new ImageAnalysis.Analyzer() {
             @Override
-            public void analyze(@NonNull ImageProxy image) {
+            public void analyze(@NonNull ImageProxy imageProxy) {
                 //int rotation=image.getImageInfo().getRotationDegrees();
                 //analyzeImage(image,rotation);
-
-                image.close();
+                @SuppressLint("UnsafeOptInUsageError") Image image = imageProxy.getImage();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(1000);
+                            textView.setText(classifyImage(toBitmap(image),2));
+                            imageProxy.close();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
             }
         });
 
         Camera camera=cameraProvider.bindToLifecycle((LifecycleOwner) this,cameraSelector,preview,imageAnalysis);
-    }
-    Module module;
-    void LoadTorchModule(String fileName) {
-        File modelFile = new File(this.getFilesDir(), fileName);
-        try {
-            if(!modelFile.exists()){
-                InputStream inputStream=getAssets().open(fileName);
-                FileOutputStream outputStream=new FileOutputStream(modelFile);
-                byte[] buffer=new byte[2048];
-                int bytesRead=-1;
-                while((bytesRead=inputStream.read(buffer))!=-1){
-                    outputStream.write(buffer,0,bytesRead);
-                }
-                inputStream.close();
-                outputStream.close();
-            }
-            //module = Module.load(OfflineActivity.assetFilePath(getApplicationContext(), "small.pt"));
-            //module = LiteModuleLoader.load(modelFile.getAbsolutePath());
-            module = Module.load(modelFile.getAbsolutePath());
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-    public String assetFilePath(String assetName) throws IOException {
-        File file = new File(this.getFilesDir(), assetName);
-        if (file.exists() && file.length() > 0) {
-            return file.getAbsolutePath();
-        }
-
-        try (InputStream is = this.getAssets().open(assetName)) {
-            try (OutputStream os = new FileOutputStream(file)) {
-                byte[] buffer = new byte[4 * 1024];
-                int read;
-                while ((read = is.read(buffer)) != -1) {
-                    os.write(buffer, 0, read);
-                }
-                os.flush();
-            }
-            return file.getAbsolutePath();
-        }
-    }
-
-    void analyzeImage(ImageProxy image,int rotation){
-
-        @SuppressLint("UnsafeOptInUsageError") Tensor inputTensor= TensorImageUtils.imageYUV420CenterCropToFloat32Tensor(image.getImage(), rotation,224,224,
-                TensorImageUtils.TORCHVISION_NORM_MEAN_RGB,TensorImageUtils.TORCHVISION_NORM_STD_RGB);
-        Tensor outputTensor=module.forward(IValue.from(inputTensor)).toTensor();
-        float[] scores=outputTensor.getDataAsFloatArray();
-        float maxScore=-Float.MAX_VALUE;
-        int maxScoreIdx=-1;
-        for (int i=0;i<scores.length;i++){
-            if(scores[i]>maxScore){
-                maxScore=scores[i];
-                maxScoreIdx=i;
-            }
-        }
-
-        String classResult=imagenet_classes.get(maxScoreIdx);
-        Log.v("Torch","Detected - "+classResult);
-        float finalMaxScore = maxScore;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                textView.setText(classResult+" - "+ finalMaxScore +"%");
-            }
-        });
-
-    }
-    List<String> LoadClasses(String fileName){
-        List<String> classes=new ArrayList<>();
-
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open(fileName)));
-            String line;
-            while((line=br.readLine())!=null){
-                classes.add(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return classes;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_offline);
-        //imagenet_classes=LoadClasses("imagenet-classes.txt");
-        imagenet_classes=LoadClasses("small.txt");
         previewView=findViewById(R.id.cameraView);
         textView=findViewById(R.id.result_text);
         camlay=findViewById(R.id.camlay);
         if(!checkPermissions()){
             ActivityCompat.requestPermissions(this,REQUIRED_PERMISSIONS,REQUEST_CODE_PERMISSION);
         }
-        //LoadTorchModule("mobilenet-v2.pt");
-        //LoadTorchModule("best.torchscript");
         cameraProviderFuture=ProcessCameraProvider.getInstance(this);
         cameraProviderFuture.addListener(()-> {
             try {
@@ -238,8 +188,6 @@ public class OfflineActivity extends AppCompatActivity {
                 openGallery();
             }
         });
-        //classifier = new Classifier(Utils.assetFilePath(this,"mobilenet-v2.pt"));
-        classifier = new Classifier(Utils.assetFilePath(this,"best.torchscript"));
         cameraBtn = findViewById(R.id.cameraBtn);
         cameraBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -287,7 +235,7 @@ public class OfflineActivity extends AppCompatActivity {
             kep.setImageBitmap(image);
             image = Bitmap.createScaledBitmap(image, imageSize, imageSize, false);
             Log.i("Mytag", "Van kép");
-            classifyImage(image);
+            classifyImage(image,1);
 
             //name.setText(classifier.predict(bitmap)[0]);
             //percentage.setText(classifier.predict(bitmap)[1]);
@@ -300,7 +248,7 @@ public class OfflineActivity extends AppCompatActivity {
             //bitmap = ThumbnailUtils.extractThumbnail(bitmap, dimension, dimension);
             kep.setImageBitmap(bitmap);
             bitmap = Bitmap.createScaledBitmap(bitmap, imageSize, imageSize, false);
-            classifyImage(bitmap);
+            classifyImage(bitmap,1);
 
             //name.setText(classifier.predict(bitmap)[0]);
             //percentage.setText(classifier.predict(bitmap)[1]);
@@ -308,7 +256,7 @@ public class OfflineActivity extends AppCompatActivity {
         }
 
     }
-    public void classifyImage(Bitmap image) {
+    public String classifyImage(Bitmap image,int k) {
         try {
             //Model model = Model.newInstance(getApplicationContext());
             Model2 model = Model2.newInstance(getApplicationContext());
@@ -340,22 +288,27 @@ public class OfflineActivity extends AppCompatActivity {
             int maxPos = 0;
             float maxConfidence = 0;
             for (int i = 0; i < confidences.length; i++) {
-                Log.i("MyTag",String.valueOf(confidences[i]));
+                Log.i("MyTag", String.valueOf(confidences[i]));
                 if (confidences[i] > maxConfidence) {
                     maxConfidence = confidences[i];
                     maxPos = i;
                 }
             }
-            String[] classes = {"A", "B", "C","D","E","F","G"};
-            //String[] classes = {"melanocytic nevi (nv)", "melanoma (mel)","benign keratosis-like lesions (bkl)",
-            //"basal cell carcinoma (bcc)", "actinic keratoses (akiec)","vascular lesions (vasc)", "dermafofibroma (df)"};
-            name.setText(classes[maxPos]);
-            percentage.setText(String.valueOf(maxConfidence));
+            //String[] classes = {"A", "B", "C", "D", "E", "F", "G"};
+            String[] classes = {"melanocytic nevi (nv)", "melanoma (mel)","benign keratosis-like lesions (bkl)",
+            "basal cell carcinoma (bcc)", "actinic keratoses (akiec)","vascular lesions (vasc)", "dermafofibroma (df)"};
+            if (k == 1) {
+                name.setText(classes[maxPos]);
+                percentage.setText(String.valueOf(maxConfidence));
+            } else if (k == 2) {
+                return classes[maxPos] + "\n" + maxConfidence;
+            }
             // Releases model resources if no longer used.
             model.close();
         } catch (IOException e) {
             // TODO Handle the exception
         }
+        return null;
     }
 
 
