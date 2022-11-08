@@ -12,9 +12,9 @@ def predict():
     
     headers = request.headers
     img_data = request.files["image"]
-    pred_str: str = do_inference(img_data,headers)
+    pred_str, class_prob = do_inference(img_data,headers)
     
-    body = json.dumps({"prediction":pred_str})
+    body = json.dumps({"prediction":pred_str,"probability":class_prob})
     response = Response(body, content_type="application/json",headers={"success": True})
     
     return response
