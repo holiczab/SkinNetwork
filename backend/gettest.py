@@ -35,4 +35,4 @@ def client_get_test_mobile():
 
 if __name__ == "__main__":
     client_get_test_desktop()
-    #client_get_test_mobile()
+    client_get_test_mobile()
