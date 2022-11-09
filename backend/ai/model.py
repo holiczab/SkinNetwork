@@ -1,10 +1,13 @@
+import base64
+from io import BytesIO
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 from PIL import Image # type: ignore
 import numpy as np
+import json
 import onnxruntime as ort  # type: ignore
 from utils import * # type: ignore
-
+import traceback
 INPUT_SHAPE: List[int] = [640, 640, 3]  # yolov5l input size
 ONNX_PATH: Path = Path(RESOURCES_PATH / "small.onnx") # type: ignore 
 
@@ -31,10 +34,17 @@ global ort_session
 ort_session = create_ort_session(ONNX_PATH)
 
 
-def preprocess_img(img_data: str,headers: Dict[str,str]) -> np.ndarray:
+def preprocess_img(json_data: str,headers) -> np.ndarray:
+    if headers["client"] == "desktop":
+        body_dict = json.loads(json_data)
+        img_array = json.loads(body_dict["image"])
+        img = np.asarray(img_array,dtype=np.float32)            
     
-    if headers["Image-Type"] == "encoded" :
-        img: np.ndarray = convert_encoded_image(img_data)
+    elif headers["client"] == "mobile":
+        body_dict = json.loads(json_data)
+        image_png = base64.b64decode(body_dict["image"])
+        pil_img = Image.open(BytesIO(image_png)).convert("RGB")
+        img = np.asarray(pil_img,dtype=np.float32)
         
     img = np.resize(img, INPUT_SHAPE)
     img = np.transpose(img,(2,0,1))
@@ -42,11 +52,6 @@ def preprocess_img(img_data: str,headers: Dict[str,str]) -> np.ndarray:
     img = (img - np.min(img)) / (np.max(img) - np.min(img))
     return img
 
-def convert_encoded_image(img_data: str) -> np.ndarray:
-    
-    pil_img = Image.open(img_data).convert("RGB")
-    img = np.asarray(pil_img, dtype=np.float32)
-    return img
 
 def predict(img: np.ndarray) -> np.ndarray:
     ort_pred = ort_session.run(output_names=None, input_feed={"images": img})
@@ -78,9 +83,9 @@ def postprocess_prediction(ort_pred: np.ndarray) -> Tuple[str,float]:
     return (class_str,float(max_prob_val))
 
 
-def do_inference(img_data: str,headers: Dict[str,str]) -> Tuple[str,float]:
-
-    img = preprocess_img(img_data,headers)
+def do_inference(json_data: str, headers) -> Tuple[str,float]:
+    
+    img = preprocess_img(json_data, headers)
     prediction = predict(img)
     class_str,prob = postprocess_prediction(prediction)
     return (class_str,prob)
