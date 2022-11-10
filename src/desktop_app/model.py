@@ -53,19 +53,14 @@ class Model:
     def __wait_for_result(self) -> bool:
         pass
 
-    def open_image(self, input_path: str) -> ImageTk.PhotoImage:
+    def open_image(self, input_path: str):
         """
         Opens image. First for sending the data, second, for visualising it. # Might change later
 
         :param input_path: Path to the file
         :return: The PIL image for the View
-
-        with open(input_path, encoding="utf8") as img:
-            image = img.read()
-            self.send_data(img)
         """
         with Image.open(input_path) as img:
-            self.send_data(img)  # Might not be the best place for it if we want to open img while waiting for response
             self.image = img
             self.image.thumbnail((600, 600), Image.ANTIALIAS)
             return ImageTk.PhotoImage(self.image)

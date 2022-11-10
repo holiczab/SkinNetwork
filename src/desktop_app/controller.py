@@ -1,5 +1,6 @@
 from main_window import MainWindow
 from model import Model
+from PIL import ImageTk, Image
 
 
 class Controller(object):
@@ -53,14 +54,18 @@ class Controller(object):
         path = self.view.open_file_dialog()
         if path != "":
             # self.view.show_image(path)
-            self.view.show_image_file(self.model.open_image(path))
+
+            opened_image = self.model.open_image(path)
+            self.view.show_image_file(opened_image)
+
+            self.model.send_data(self.model.image)  # Comment it until Zsombor is not ready
+
             if self.model.result is not None:
                 # Successful classification
                 # Result ought to be a json. (for details ask Zsombor)
                 pass
             else:
                 # Error popup or something
-                # Optionally image opening could come here instead before the if, idk
                 pass
         # self.view.stop_progressbar(self.view.thread)
 
