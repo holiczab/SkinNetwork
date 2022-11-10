@@ -3,7 +3,7 @@ from datetime import date
 import cv2
 
 
-def generate_pdf(skin_image_path, image_class, confidence):
+def generate_pdf(image_save_path, skin_image_path, image_class, confidence, lang='en'):
 
     pdf = fpdf.FPDF()
     pdf_title = "Pdf report"
@@ -74,7 +74,7 @@ def generate_pdf(skin_image_path, image_class, confidence):
     pdf.multi_cell(page_width-2*m, 5, disclaimer_text)
 
     # Save pdf
-    pdf.output(name="skin_condition_report.pdf")
+    pdf.output(name=image_save_path)
 
 if __name__ == "__main__":
-    generate_pdf("skin.png", 2, 60)
+    generate_pdf("skin_condition_report.pdf", "skin.png", 2, 60, lang='en')
