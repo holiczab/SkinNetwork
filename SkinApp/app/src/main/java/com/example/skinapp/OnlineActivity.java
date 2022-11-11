@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
@@ -67,17 +68,18 @@ public class OnlineActivity extends AppCompatActivity {
     // constant code for runtime permissions
     private static final int PERMISSION_REQUEST_CODE = 200;
     private static final int PICK_IMAGE = 100;
-    public String postUrl= "http://" + "192.168.0.68" + ":" + 8080 + "/predict";
+    public String postUrl= "http://" + "192.168.0.25" + ":" + 8080 + "/predict";
     public String postBody= "";
     public JSONObject jsonString;
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     TextView name,percentage;
+    ProgressBar progressBar;
     public static String encodeTobase64(Bitmap image) {
         Bitmap immagex=image;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         immagex.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] b = baos.toByteArray();
-        String imageEncoded = Base64.encodeToString(b,Base64.NO_PADDING);
+        String imageEncoded = Base64.encodeToString(b,Base64.DEFAULT);
         return imageEncoded;
     }
     public boolean isJSONValid(String test) {
@@ -103,25 +105,22 @@ public class OnlineActivity extends AppCompatActivity {
             InputStream imageStream = null;
             try {
                 imageStream = this.getContentResolver().openInputStream(imageUri);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            Bitmap yourSelectedImage = BitmapFactory.decodeStream(imageStream);
-            try {
+                Bitmap yourSelectedImage = BitmapFactory.decodeStream(imageStream);
                 jsonString = new JSONObject().put("image", encodeTobase64(yourSelectedImage));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            try {
                 postRequest(postUrl, String.valueOf(jsonString));
-            } catch (IOException e) {
+            } catch (JSONException | IOException e) {
                 e.printStackTrace();
             }
         }
         if (requestCode == 7 && resultCode == RESULT_OK) {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
             kep.setImageBitmap(bitmap);
-
+            try {
+                jsonString = new JSONObject().put("image", encodeTobase64(bitmap));
+                postRequest(postUrl, String.valueOf(jsonString));
+            } catch (JSONException | IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }
@@ -130,7 +129,7 @@ public class OnlineActivity extends AppCompatActivity {
 
         OkHttpClient client = new OkHttpClient();
         RequestBody body = RequestBody.create(JSON, postBody);
-        Log.i("Mytag", postBody);
+        //Log.i("Mytag", postBody);
         Request request = new Request.Builder()
                 .header("client", "mobile")
                 .url(postUrl)
@@ -156,10 +155,11 @@ public class OnlineActivity extends AppCompatActivity {
                     public void run() {
                         try {
                             //Toast.makeText(OnlineActivity.this,  response.body().string(), Toast.LENGTH_LONG).show();
-                            JSONObject myObject = new JSONObject(String.valueOf(response.body()));
-                            name.setText(String.valueOf(myObject.get("prediction")));
-                            percentage.setText(String.valueOf(myObject.get("probability")));
-                        } catch (JSONException e) {
+                            JSONObject myObject = new JSONObject(response.body().string());
+                            name.setText(myObject.get("prediction").toString());
+                            percentage.setText(myObject.get("probability").toString().substring(2,4)+" %");
+                            progressBar.setProgress(Integer.parseInt(myObject.get("probability").toString().substring(2,4)));
+                        } catch (JSONException | IOException e) {
                             e.printStackTrace();
                         }
                     }
@@ -184,6 +184,7 @@ public class OnlineActivity extends AppCompatActivity {
         kep=findViewById(R.id.imageView5);
         name=findViewById(R.id.name);
         percentage=findViewById(R.id.percentage);
+        progressBar=findViewById(R.id.progressBar);
         bmp = BitmapFactory.decodeResource(getResources(), R.drawable.skin);
         scaledbmp = Bitmap.createScaledBitmap(bmp, 140, 140, false);
         if (checkPermission()) {

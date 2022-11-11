@@ -41,7 +41,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.skinapp.ml.*;
-import com.example.skinapp.ml.Model;
 import com.example.skinapp.ml.Model2;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -268,12 +267,9 @@ public class OfflineActivity extends AppCompatActivity {
     private Interpreter tfLite;
     public String classifyImage(Bitmap image,int k) {
         try {
-            //Model model = Model.newInstance(getApplicationContext());
-            //Model2 model = Model2.newInstance(getApplicationContext());
             Model2 model = Model2.newInstance(getApplicationContext());
             // Creates inputs for reference.
             TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 480, 480, 3}, DataType.FLOAT32);
-            //TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 3, 32, 32}, DataType.FLOAT32);
             ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3);
             byteBuffer.order(ByteOrder.nativeOrder());
             int[] intValues = new int[imageSize * imageSize];
