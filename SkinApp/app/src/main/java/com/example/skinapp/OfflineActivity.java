@@ -40,11 +40,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.skinapp.ml.*;
 import com.example.skinapp.ml.Model;
 import com.example.skinapp.ml.Model2;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.tensorflow.lite.DataType;
+import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.io.BufferedReader;
@@ -58,7 +60,9 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -256,12 +260,20 @@ public class OfflineActivity extends AppCompatActivity {
         }
 
     }
+    private int[] intValues;
+    private float[][][] outputLocations;
+    private float[][] outputClasses;
+    private float[][] outputScores;
+    private float[] numDetections;
+    private Interpreter tfLite;
     public String classifyImage(Bitmap image,int k) {
         try {
             //Model model = Model.newInstance(getApplicationContext());
+            //Model2 model = Model2.newInstance(getApplicationContext());
             Model2 model = Model2.newInstance(getApplicationContext());
             // Creates inputs for reference.
             TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 480, 480, 3}, DataType.FLOAT32);
+            //TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 3, 32, 32}, DataType.FLOAT32);
             ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3);
             byteBuffer.order(ByteOrder.nativeOrder());
             int[] intValues = new int[imageSize * imageSize];
@@ -276,6 +288,7 @@ public class OfflineActivity extends AppCompatActivity {
                     byteBuffer.putFloat((val & 0xFF) * (1.f / 1));
                 }
             }
+
             inputFeature0.loadBuffer(byteBuffer);
 
             // Runs model inference and gets result.
@@ -283,25 +296,62 @@ public class OfflineActivity extends AppCompatActivity {
             TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
 
             float[] confidences = outputFeature0.getFloatArray();
-            Log.i("MyTag", String.valueOf(confidences.length));
-            // find the index of the class with the biggest confidence.
-            int maxPos = 0;
-            float maxConfidence = 0;
-            for (int i = 0; i < confidences.length; i++) {
-                Log.i("MyTag", String.valueOf(confidences[i]));
-                if (confidences[i] > maxConfidence) {
-                    maxConfidence = confidences[i];
-                    maxPos = i;
+            String all="";
+            ArrayList<float[]> values = new ArrayList<>();
+            if(confidences.length==7)
+            {
+                for (int i = 0; i < confidences.length; i++) {
+                    all+=confidences[i]+" ";
+                }
+                Log.i("MyTag", all);
+                int maxPos = 0;
+                float maxConfidence = 0;
+                for (int i = 0; i < confidences.length; i++) {
+                    //Log.i("MyTag", String.valueOf(confidences[i]));
+                    if (confidences[i] > maxConfidence) {
+                        maxConfidence = confidences[i];
+                        maxPos = i;
+                    }
+                }
+                //String[] classes = {"A", "B", "C", "D", "E", "F", "G"};
+                String[] classes = {"melanocytic nevi (nv)", "melanoma (mel)","benign keratosis-like lesions (bkl)",
+                        "basal cell carcinoma (bcc)", "actinic keratoses (akiec)","vascular lesions (vasc)", "dermafofibroma (df)"};
+                if (k == 1) {
+                    name.setText(classes[maxPos]);
+                    percentage.setText(String.valueOf(maxConfidence));
+                } else if (k == 2) {
+                    return classes[maxPos] + "\n" + maxConfidence;
                 }
             }
-            //String[] classes = {"A", "B", "C", "D", "E", "F", "G"};
-            String[] classes = {"melanocytic nevi (nv)", "melanoma (mel)","benign keratosis-like lesions (bkl)",
-            "basal cell carcinoma (bcc)", "actinic keratoses (akiec)","vascular lesions (vasc)", "dermafofibroma (df)"};
-            if (k == 1) {
-                name.setText(classes[maxPos]);
-                percentage.setText(String.valueOf(maxConfidence));
-            } else if (k == 2) {
-                return classes[maxPos] + "\n" + maxConfidence;
+            else{
+                for (int i = 0; i < confidences.length; i+=6) {
+                    if (confidences[i+4]>0.8){
+                        values.add(new float[]{confidences[i],confidences[i+1],confidences[i+2],confidences[i+3]
+                                ,confidences[i+4],confidences[i+5]});
+                        all += confidences[i]+" "+confidences[i+1]+" "+confidences[i+2]+" "+confidences[i+3]
+                                +" "+confidences[i+4]+" "+confidences[i+5]+"\n";
+                    }
+                }
+                Log.i("MyTag", all);
+                int maxPos = 0;
+                float maxConfidence = 0;
+                for (int i = 0; i < values.size(); i++) {
+                    //Log.i("MyTag", String.valueOf(confidences[i]));
+                    if (values.get(i)[4] > maxConfidence) {
+                        maxConfidence = values.get(i)[4];
+                        maxPos = i;
+                    }
+                }
+                //String[] classes = {"A", "B", "C", "D", "E", "F", "G"};
+                String[] classes = {"melanocytic nevi (nv)", "melanoma (mel)","benign keratosis-like lesions (bkl)",
+                        "basal cell carcinoma (bcc)", "actinic keratoses (akiec)","vascular lesions (vasc)", "dermafofibroma (df)"};
+
+                if (k == 1) {
+                    name.setText(classes[Math.round(values.get(maxPos)[5])]);
+                    percentage.setText(String.valueOf(maxConfidence));
+                } else if (k == 2) {
+                    return classes[Math.round(values.get(maxPos)[5])] + "\n" + maxConfidence;
+                }
             }
             // Releases model resources if no longer used.
             model.close();
@@ -310,7 +360,6 @@ public class OfflineActivity extends AppCompatActivity {
         }
         return null;
     }
-
 
     private void openCamera() {
         Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
