@@ -13,7 +13,11 @@ ONNX_PATH: Path = Path(RESOURCES_PATH / "small.onnx") # type: ignore
 
 OBJECTNESS_CONFIDENCE_THRESHOLD: float = 0.8
 CLASS_PROBABILITY_THRESHOLD: float = 0.8
+<<<<<<< Updated upstream
 CLASS_MAPPING: dict[int, str] = {
+=======
+CLASS_MAPPING: Dict[int, str] = {
+>>>>>>> Stashed changes
     0: "Melanocytic nevi",
     1: "Melanoma",
     2: "Benign keratosis-like lesion",
@@ -41,7 +45,12 @@ def preprocess_img(json_data: str,headers) -> np.ndarray:
         img = np.asarray(img_array,dtype=np.float32)            
     
     elif headers["client"] == "mobile":
+<<<<<<< Updated upstream
         body_dict = json.loads(json_data)
+=======
+        temp = json.dumps(json_data)
+        body_dict = json.loads(temp)
+>>>>>>> Stashed changes
         image_png = base64.b64decode(body_dict["image"])
         pil_img = Image.open(BytesIO(image_png)).convert("RGB")
         img = np.asarray(pil_img,dtype=np.float32)
