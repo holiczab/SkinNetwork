@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -34,6 +35,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -41,6 +45,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 import okhttp3.Call;
@@ -62,40 +67,56 @@ public class OnlineActivity extends AppCompatActivity {
     // constant code for runtime permissions
     private static final int PERMISSION_REQUEST_CODE = 200;
     private static final int PICK_IMAGE = 100;
-    public String postUrl= "http://" + "192.168.119.148" + ":" + 8080 + "/predict";
-    public String postBody= "{\n image:";
+    public String postUrl= "http://" + "192.168.0.68" + ":" + 8080 + "/predict";
+    public String postBody= "";
+    public JSONObject jsonString;
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
+    TextView name,percentage;
+    public static String encodeTobase64(Bitmap image) {
+        Bitmap immagex=image;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        immagex.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] b = baos.toByteArray();
+        String imageEncoded = Base64.encodeToString(b,Base64.NO_PADDING);
+        return imageEncoded;
+    }
+    public boolean isJSONValid(String test) {
+        try {
+            new JSONObject(test);
+        } catch (JSONException ex) {
+            // edited, to include @Arthur's comment
+            // e.g. in case JSONArray is valid as well...
+            try {
+                new JSONArray(test);
+            } catch (JSONException ex1) {
+                return false;
+            }
+        }
+        return true;
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == PICK_IMAGE){
             imageUri = data.getData();
             kep.setImageURI(imageUri);
-            Bitmap bitmap = null;
+            InputStream imageStream = null;
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                imageStream = this.getContentResolver().openInputStream(imageUri);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            Bitmap yourSelectedImage = BitmapFactory.decodeStream(imageStream);
+            try {
+                jsonString = new JSONObject().put("image", encodeTobase64(yourSelectedImage));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                postRequest(postUrl, String.valueOf(jsonString));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-            byte[] byteArray = byteArrayOutputStream .toByteArray();
-            postBody += Base64.encodeToString(byteArray, Base64.DEFAULT)+"}";
-            try {
-                postRequest(postUrl,postBody);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            /*
-            resp = rqs.get(address, json=fh, headers={"client": "desktop"})
-            if resp.headers["success"]:
-            # All good
-            print("Minden oke")
-            else:
-                print("Valami felrement")
-            # wait_for_result
-             */
         }
         if (requestCode == 7 && resultCode == RESULT_OK) {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
@@ -105,10 +126,11 @@ public class OnlineActivity extends AppCompatActivity {
 
     }
 
-    void postRequest(String postUrl,String postBody) throws IOException {
+    void postRequest(String postUrl, String postBody) throws IOException {
 
         OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(JSON,postBody);
+        RequestBody body = RequestBody.create(JSON, postBody);
+        Log.i("Mytag", postBody);
         Request request = new Request.Builder()
                 .header("client", "mobile")
                 .url(postUrl)
@@ -133,9 +155,11 @@ public class OnlineActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            Toast.makeText(OnlineActivity.this,
-                                    response.body().string(), Toast.LENGTH_LONG).show();
-                        } catch (IOException e) {
+                            //Toast.makeText(OnlineActivity.this,  response.body().string(), Toast.LENGTH_LONG).show();
+                            JSONObject myObject = new JSONObject(String.valueOf(response.body()));
+                            name.setText(String.valueOf(myObject.get("prediction")));
+                            percentage.setText(String.valueOf(myObject.get("probability")));
+                        } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
@@ -158,6 +182,8 @@ public class OnlineActivity extends AppCompatActivity {
         setContentView(R.layout.activity_online);
         sendBtn=findViewById(R.id.sendBtn);
         kep=findViewById(R.id.imageView5);
+        name=findViewById(R.id.name);
+        percentage=findViewById(R.id.percentage);
         bmp = BitmapFactory.decodeResource(getResources(), R.drawable.skin);
         scaledbmp = Bitmap.createScaledBitmap(bmp, 140, 140, false);
         if (checkPermission()) {
