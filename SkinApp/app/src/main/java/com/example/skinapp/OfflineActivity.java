@@ -41,7 +41,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.skinapp.ml.*;
-import com.example.skinapp.ml.Model2;
+import com.example.skinapp.ml.Model;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.tensorflow.lite.DataType;
@@ -267,7 +267,7 @@ public class OfflineActivity extends AppCompatActivity {
     private Interpreter tfLite;
     public String classifyImage(Bitmap image,int k) {
         try {
-            Model2 model = Model2.newInstance(getApplicationContext());
+            Model model = Model.newInstance(getApplicationContext());
             // Creates inputs for reference.
             TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 480, 480, 3}, DataType.FLOAT32);
             ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3);
@@ -288,7 +288,7 @@ public class OfflineActivity extends AppCompatActivity {
             inputFeature0.loadBuffer(byteBuffer);
 
             // Runs model inference and gets result.
-            Model2.Outputs outputs = model.process(inputFeature0);
+            Model.Outputs outputs = model.process(inputFeature0);
             TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
 
             float[] confidences = outputFeature0.getFloatArray();

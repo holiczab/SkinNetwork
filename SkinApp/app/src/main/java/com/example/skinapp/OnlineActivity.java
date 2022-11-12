@@ -68,7 +68,7 @@ public class OnlineActivity extends AppCompatActivity {
     // constant code for runtime permissions
     private static final int PERMISSION_REQUEST_CODE = 200;
     private static final int PICK_IMAGE = 100;
-    public String postUrl= "http://" + "192.168.0.25" + ":" + 8080 + "/predict";
+    public String postUrl= "http://" + "192.168.0.68" + ":" + 8080 + "/predict";
     public String postBody= "";
     public JSONObject jsonString;
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
