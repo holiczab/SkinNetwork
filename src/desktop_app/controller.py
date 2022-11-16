@@ -76,7 +76,7 @@ class Controller(object):
                 self.view.more_btn.configure(state=DISABLED)
                 self.view.report_btn.configure(state=DISABLED)
                 pass
-        self.view.stop_progressbar(self.view.progress_bar_thread)
+            # self.view.stop_progressbar(self.view.progress_bar_thread)
 
     def __more_info_button_clicked(self):
         pass
