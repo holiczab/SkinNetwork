@@ -138,7 +138,7 @@ class Controller(object):
                     message="Could not generate PDF Report!"
                 )
 
-    def __update_labels(self, prediction: str, confidence: int) -> None:
+    def __update_labels(self, prediction: str, confidence: float) -> None:
         """
         Updates the feedback widgets on the main window.
 
