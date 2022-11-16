@@ -8,4 +8,8 @@ RESOURCES_PATH = BACKEND_ROOT / "resources"
 
 
 def forge_fail_response(reason: str) -> Response:
-    return Response(json.dumps({"reason":reason}), content_type="application/json",headers={"success": False})
+    return Response(
+        json.dumps({"reason": reason}),
+        content_type="application/json",
+        headers={"success": False},
+    )
