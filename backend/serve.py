@@ -1,6 +1,6 @@
 import traceback
 from flask import Flask, request,Response
-from ai.model import do_inference 
+from ai.model import do_inference
 import json
 from PIL import Image # type: ignore
 from utils import forge_fail_response
@@ -20,11 +20,6 @@ def predict():
     
     body = json.dumps({"prediction":pred_str,"probability":class_prob})
     response = Response(body, content_type="application/json",headers={"success": True})
-<<<<<<< Updated upstream
-    
-=======
-    print(pred_str," ",class_prob)
->>>>>>> Stashed changes
     return response
 
 

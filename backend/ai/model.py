@@ -7,7 +7,7 @@ import numpy as np
 import json
 import onnxruntime as ort  # type: ignore
 from utils import * # type: ignore
-import traceback
+
 INPUT_SHAPE: List[int] = [640, 640, 3]  # yolov5l input size
 ONNX_PATH: Path = Path(RESOURCES_PATH / "small.onnx") # type: ignore 
 
@@ -36,13 +36,15 @@ ort_session = create_ort_session(ONNX_PATH)
 
 def preprocess_img(json_data: str,headers) -> np.ndarray:
     if headers["client"] == "desktop":
+        
         body_dict = json.loads(json_data)["files"]
         img_array = json.loads(body_dict["image"])
-        img = np.asarray(img_array,dtype=np.float32)            
+        img = np.asarray(img_array,dtype=np.float32) 
     
     elif headers["client"] == "mobile":
-        temp = json.dumps(json_data)
-        body_dict = json.loads(temp)
+        #temp = json.dumps(json_data)
+        body_dict = json.loads(json_data)
+
         image_png = base64.b64decode(body_dict["image"])
         pil_img = Image.open(BytesIO(image_png)).convert("RGB")
         img = np.asarray(pil_img,dtype=np.float32)
