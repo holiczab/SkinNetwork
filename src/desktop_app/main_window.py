@@ -45,9 +45,6 @@ class MainWindow(ttk.Window):
         :return: None
         """
 
-        input_path = "./pics/birthmark.jpg"
-        self.show_image(input_path)
-        self.progress_bar_thread = self.start_progressbar_on_thread()
         self.mainloop()
 
     def start_progressbar_on_thread(self) -> threading.Thread:
@@ -84,7 +81,7 @@ class MainWindow(ttk.Window):
         thread.join()
         self.progress_bar.configure(value=0, mode="determinate")
 
-    def show_image_file(self, image_to_open: ImageTk.PhotoImage):
+    def show_image(self, image_to_open: ImageTk.PhotoImage):
         """
         Displays the image contained in Model
 
@@ -94,24 +91,9 @@ class MainWindow(ttk.Window):
         self.displayed_img = image_to_open
         self.img_frame.configure(image=self.displayed_img)
 
-    def show_image(self, input_path: str) -> None:
-        """
-        Displays an image in the middle section of the main window.
-
-        :param input_path: path of image
-        :return: None
-        """
-
-        with Image.open(input_path) as img:
-            self.source_image = img
-            self.source_image.thumbnail((600, 600), Image.ANTIALIAS)
-
-        self.displayed_img = ImageTk.PhotoImage(self.source_image)
-        self.img_frame.configure(image=self.displayed_img)
-
     def open_file_dialog(self) -> str:
         """
-        Handles the file opening with an Open File Dialog.
+        Handles the user interaction to open a file with an Open File Dialog.
 
         :return: path of opened file
         """
@@ -131,8 +113,27 @@ class MainWindow(ttk.Window):
 
         return filename
 
-    def open_report_dialog(self):
-        pass
+    def save_file_dialog(self) -> str:
+        """
+        Handles the user interaction to save a file with a Save File Dialog.
+
+        :return: output path
+        """
+
+        filetypes = (
+            ("PDF files", "*.pdf"),
+            ("All files", "*.*")
+        )
+
+        path = fd.asksaveasfilename(
+            parent=self,
+            title="Save file",
+            initialdir="../",
+            filetypes=filetypes,
+            defaultextension="pdf"
+        )
+
+        return path
 
     # Private non-static methods
     def __set_main_window_properties(self) -> None:
@@ -170,10 +171,10 @@ class MainWindow(ttk.Window):
         self.frame_right["bootstyle"] = "primary"
 
         # Components in the section on the left
-        logo_img_path = os.path.join(os.getcwd(), "pics/logo_2.png")
+        logo_img_path = os.path.join(os.getcwd(), "resources/pics/logo_2.png")
         self.logo_img = ImageTk.PhotoImage(Image.open(logo_img_path).resize((200, 200)))
 
-        upload_img_path = os.path.join(os.getcwd(), "pics/upload.png")
+        upload_img_path = os.path.join(os.getcwd(), "resources/pics/upload.png")
         self.upload_img = ImageTk.PhotoImage(Image.open(upload_img_path).resize((64, 64)))
 
         self.logo_img_frame = ttk.Label(master=self.frame_left)
@@ -199,7 +200,7 @@ class MainWindow(ttk.Window):
 
         self.result_label = ttk.Checkbutton(
             master=self.result_frame,
-            text="Eredmény:\nMelanoma",
+            text="Eredmény:\n",
             variable=ttk.IntVar(value=1),
             onvalue=1,
             offvalue=1
@@ -211,17 +212,18 @@ class MainWindow(ttk.Window):
             textright="%",
             subtext="Bizonyosság",
             interactive=False,
-            amountused=96,
+            amountused=0,
             amounttotal=100,
         )
 
         self.more_frame = ttk.Frame(master=self.frame_right, padding=5)
 
-        self.more_btn = ttk.Button(master=self.more_frame, text="Több információ...")
-        self.report_btn = ttk.Button(master=self.more_frame, text="Jelentés generálása...")
+        self.more_btn = ttk.Button(master=self.more_frame, text="Több információ...", state=DISABLED)
+        self.report_btn = ttk.Button(master=self.more_frame, text="Jelentés generálása...", state=DISABLED)
 
-        self.result_label["bootstyle"] = "danger-outline-toolbutton"
-        self.prob_meter["bootstyle"] = "danger"
+        # self.result_label["bootstyle"] = "danger-outline-toolbutton"
+        self.result_label["bootstyle"] = "primary-outline-toolbutton"
+        self.prob_meter["bootstyle"] = "primary"
 
         # self.prob_meter.configure(amountused=56)
         # self.prob_meter["bootstyle"] = "success"
