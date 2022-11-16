@@ -61,6 +61,7 @@ class Controller(object):
             self.view.show_image(opened_image)
 
             self.view.progress_bar_thread = self.view.start_progressbar_on_thread()
+            self.__reset_results()
 
             self.model.send_data(self.model.image)  # Comment it until Zsombor is not ready
 
@@ -68,15 +69,21 @@ class Controller(object):
                 # Successful classification
                 # Result ought to be a json. (for details ask Zsombor)
 
+                prediction = self.model.result["prediction"]
+                probability = self.model.result["probability"]
+
+                self.__update_labels(prediction, probability)
+
                 self.view.more_btn.configure(state=NORMAL)
                 self.view.report_btn.configure(state=NORMAL)
                 pass
             else:
-                # Error popup or something
-                self.view.more_btn.configure(state=DISABLED)
-                self.view.report_btn.configure(state=DISABLED)
-                pass
-            # self.view.stop_progressbar(self.view.progress_bar_thread)
+                # Error popup
+                tkinter.messagebox.showerror(
+                    parent=self.view,
+                    title="Error",
+                    message="Could not classify!"
+                )
 
     def __more_info_button_clicked(self):
         pass
@@ -105,18 +112,17 @@ class Controller(object):
                     message="Could not generate PDF Report!"
                 )
 
-    def __update_labels(self, result: str, confidence: int) -> None:
+    def __update_labels(self, prediction: str, confidence: int) -> None:
         """
         Updates the feedback widgets on the main window.
 
-        :param result: name of the disease
+        :param prediction: name of the disease
         :param confidence: confidence oof the classification
         :return: None
         """
 
-        result = self.model.result  # json-like data
-        self.view.result_label.configure(text="Eredmény:\n{}".format(result))
-        self.view.prob_meter.configure(amountused=confidence * 100)
+        self.view.result_label.configure(text="Eredmény:\n{}".format(prediction))
+        self.view.prob_meter.configure(amountused=int(confidence * 100))
 
         if confidence >= 0.9:
             bootstyle = "danger"
@@ -127,3 +133,9 @@ class Controller(object):
 
         self.view.result_label["bootstyle"] = "{}-outline-toolbutton".format(bootstyle)
         self.view.prob_meter["bootstyle"] = bootstyle
+
+    def __reset_results(self) -> None:
+        self.view.result_label["bootstyle"] = "primary-outline-toolbutton"
+        self.view.prob_meter["bootstyle"] = "primary"
+        self.view.more_btn.configure(state=DISABLED)
+        self.view.report_btn.configure(state=DISABLED)
