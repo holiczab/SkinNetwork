@@ -21,10 +21,11 @@ class Model:
         return None
         """
         self.path = ""
-        self.image = ImageTk.PhotoImage
-        self.result = {}
         self.links = {}
+        self.result = {}
+        self.image = ImageTk.PhotoImage
 
+    # Public non-static methods
     def open_image(self, input_path: str):
         """
         Opens image. First for sending the data, second, for visualising it. # Might change later
@@ -56,8 +57,10 @@ class Model:
         else:
             self.result = None
 
-    def save_report(self, image_save_path: str, skin_image_path: str,
-                    image_class: int, confidence: int, lang: str="en") -> bool:
+    # Public static methods
+    @staticmethod
+    def save_report(image_save_path: str, skin_image_path: str,
+                    image_class: int, confidence: int, lang: str = "en") -> bool:
         """
         Saving the report.
 

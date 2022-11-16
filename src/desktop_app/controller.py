@@ -65,7 +65,7 @@ class Controller(object):
 
     def __start_process(self) -> None:
         """
-        Creates and starts a new thread for the progressbar.
+        Creates and starts a new thread for the process.
 
         :return: None
         """
@@ -74,6 +74,12 @@ class Controller(object):
         process_thread.start()
 
     def __process(self) -> None:
+        """
+        The main process.
+
+        :return: None
+        """
+
         self.view.upload_btn.configure(state=DISABLED)
         self.view.progress_bar.configure(mode="indeterminate")
         self.view.progress_bar.start(25)
@@ -155,7 +161,14 @@ class Controller(object):
         self.view.prob_meter["bootstyle"] = bootstyle
 
     def __reset_results(self) -> None:
+        """
+        Resets the result labels and disables the buttons on the right side of the window.
+
+        :return: None
+        """
+
         self.view.result_label["bootstyle"] = "primary-outline-toolbutton"
         self.view.prob_meter["bootstyle"] = "primary"
+        self.view.prob_meter.configure(amountused=0)
         self.view.more_btn.configure(state=DISABLED)
         self.view.report_btn.configure(state=DISABLED)

@@ -181,17 +181,8 @@ class MainWindow(ttk.Window):
         self.more_btn = ttk.Button(master=self.more_frame, text="Több információ...", state=DISABLED)
         self.report_btn = ttk.Button(master=self.more_frame, text="Jelentés generálása...", state=DISABLED)
 
-        # self.result_label["bootstyle"] = "danger-outline-toolbutton"
         self.result_label["bootstyle"] = "primary-outline-toolbutton"
         self.prob_meter["bootstyle"] = "primary"
-
-        # self.prob_meter.configure(amountused=56)
-        # self.prob_meter["bootstyle"] = "success"
-        # self.result_label["bootstyle"] = "success-outline-toolbutton"
-        #
-        # self.prob_meter.configure(amountused=81)
-        # self.prob_meter["bootstyle"] = "warning"
-        # self.result_label["bootstyle"] = "warning-outline-toolbutton"
 
         self.more_btn["bootstyle"] = "primary"
         self.report_btn["bootstyle"] = "primary"
