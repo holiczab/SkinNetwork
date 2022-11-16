@@ -131,7 +131,7 @@ class MainWindow(ttk.Window):
         self.frame_right["bootstyle"] = "primary"
 
         # Components in the section on the left
-        logo_img_path = os.path.join(os.getcwd(), "resources/pics/logo_2.png")
+        logo_img_path = os.path.join(os.getcwd(), "resources/pics/logo.png")
         self.logo_img = ImageTk.PhotoImage(Image.open(logo_img_path).resize((200, 200)))
 
         upload_img_path = os.path.join(os.getcwd(), "resources/pics/upload.png")
