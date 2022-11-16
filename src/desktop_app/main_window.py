@@ -1,15 +1,10 @@
 import os
-import time
-import threading
 
-import tkinter as tk
 import ttkbootstrap as ttk
 
-from typing import Union
 from PIL import ImageTk, Image
 from tkinter import filedialog as fd
 from ttkbootstrap.constants import *
-from ttkbootstrap.toast import ToastNotification
 
 
 class MainWindow(ttk.Window):
@@ -31,7 +26,6 @@ class MainWindow(ttk.Window):
         self.displayed_img = None
         self.window_width = None
         self.window_height = None
-        self.progress_bar_thread = None
 
         self.__set_main_window_properties()
         self.__initialize_and_configure_components()
@@ -46,40 +40,6 @@ class MainWindow(ttk.Window):
         """
 
         self.mainloop()
-
-    def start_progressbar_on_thread(self) -> threading.Thread:
-        """
-        Creates and starts a new thread for the progressbar.
-
-        :return: None
-        """
-
-        process_thread = threading.Thread(target=self.start_progressbar, daemon=True)
-        process_thread.start()
-
-        return process_thread
-
-    def start_progressbar(self) -> None:
-        """
-        Starts the progressbar in indeterminate mode.
-
-        :return: None
-        """
-
-        self.progress_bar.configure(mode="indeterminate")
-        self.progress_bar.start(25)
-
-    def stop_progressbar(self, thread: threading.Thread) -> None:
-        """
-        Stops the progressbar and waits for the thread to finish.
-
-        :param thread: thread of the progressbar
-        :return: None
-        """
-
-        self.progress_bar.stop()
-        thread.join()
-        self.progress_bar.configure(value=0, mode="determinate")
 
     def show_image(self, image_to_open: ImageTk.PhotoImage):
         """

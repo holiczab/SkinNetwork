@@ -1,15 +1,12 @@
-import _io
+import cv2
+import json
+import fpdf
 
 import numpy as np
-from PIL import ImageTk, Image
 import requests as rqs
-import base64
-import json
-import sys
 
-import fpdf
 from datetime import date
-import cv2
+from PIL import ImageTk, Image
 
 
 class Model:

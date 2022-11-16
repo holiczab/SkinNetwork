@@ -1,8 +1,8 @@
+import threading
 import tkinter.messagebox
 
-from main_window import MainWindow
 from model import Model
-from PIL import ImageTk, Image
+from main_window import MainWindow
 from ttkbootstrap.constants import *
 
 
@@ -25,6 +25,7 @@ class Controller(object):
 
         self.view = view
         self.model = model
+
         self.__bind_commands()
 
     # Public non-static methods
@@ -60,30 +61,49 @@ class Controller(object):
             opened_image = self.model.open_image(path)
             self.view.show_image(opened_image)
 
-            self.view.progress_bar_thread = self.view.start_progressbar_on_thread()
-            self.__reset_results()
+            self.__start_process()
 
-            self.model.send_data(self.model.image)  # Comment it until Zsombor is not ready
+    def __start_process(self) -> None:
+        """
+        Creates and starts a new thread for the progressbar.
 
-            if self.model.result is not None:
-                # Successful classification
-                # Result ought to be a json. (for details ask Zsombor)
+        :return: None
+        """
 
-                prediction = self.model.result["prediction"]
-                probability = self.model.result["probability"]
+        process_thread = threading.Thread(target=self.__process, daemon=True)
+        process_thread.start()
 
-                self.__update_labels(prediction, probability)
+    def __process(self) -> None:
+        self.view.upload_btn.configure(state=DISABLED)
+        self.view.progress_bar.configure(mode="indeterminate")
+        self.view.progress_bar.start(25)
 
-                self.view.more_btn.configure(state=NORMAL)
-                self.view.report_btn.configure(state=NORMAL)
-                pass
-            else:
-                # Error popup
-                tkinter.messagebox.showerror(
-                    parent=self.view,
-                    title="Error",
-                    message="Could not classify!"
-                )
+        self.__reset_results()
+
+        self.model.send_data(self.model.image)
+
+        if self.model.result is not None:
+            # Successful classification
+            # Result ought to be a json. (for details ask Zsombor)
+
+            prediction = self.model.result["prediction"]
+            probability = self.model.result["probability"]
+
+            self.__update_labels(prediction, probability)
+
+            self.view.more_btn.configure(state=NORMAL)
+            self.view.report_btn.configure(state=NORMAL)
+        else:
+            # Error popup
+            tkinter.messagebox.showerror(
+                parent=self.view,
+                title="Error",
+                message="Could not classify!"
+            )
+
+        self.view.progress_bar.stop()
+        self.view.progress_bar.configure(value=0, mode="determinate")
+        self.view.upload_btn.configure(state=NORMAL)
 
     def __more_info_button_clicked(self):
         pass
