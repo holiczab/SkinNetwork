@@ -23,8 +23,8 @@ class Controller(object):
 
         super(Controller, self).__init__()
 
-        self.view = view
-        self.model = model
+        self.__view = view
+        self.__model = model
 
         self.__bind_commands()
 
@@ -36,7 +36,7 @@ class Controller(object):
         :return: None
         """
 
-        self.view.show()
+        self.__view.show()
 
     # Private non-static methods
     def __bind_commands(self) -> None:
@@ -46,8 +46,8 @@ class Controller(object):
         :return: None
         """
 
-        self.view.upload_btn.configure(command=self.__upload_button_clicked)
-        self.view.report_btn.configure(command=self.__generate_report_button_clicked)
+        self.__view.upload_btn.configure(command=self.__upload_button_clicked)
+        self.__view.report_btn.configure(command=self.__generate_report_button_clicked)
 
     def __upload_button_clicked(self) -> None:
         """
@@ -56,10 +56,10 @@ class Controller(object):
         :return: None
         """
 
-        path = self.view.open_file_dialog()
+        path = self.__view.open_file_dialog()
         if path != "":
-            opened_image = self.model.open_image(path)
-            self.view.show_image(opened_image)
+            opened_image = self.__model.open_image(path)
+            self.__view.show_image(opened_image)
 
             self.__start_process()
 
@@ -80,36 +80,36 @@ class Controller(object):
         :return: None
         """
 
-        self.view.upload_btn.configure(state=DISABLED)
-        self.view.progress_bar.configure(mode="indeterminate")
-        self.view.progress_bar.start(25)
+        self.__view.upload_btn.configure(state=DISABLED)
+        self.__view.progress_bar.configure(mode="indeterminate")
+        self.__view.progress_bar.start(25)
 
         self.__reset_results()
 
-        self.model.send_data(self.model.image)
+        self.__model.send_data(self.__model.image)
 
-        if self.model.result is not None:
+        if self.__model.result is not None:
             # Successful classification
             # Result ought to be a json. (for details ask Zsombor)
 
-            prediction = self.model.result["prediction"]
-            probability = self.model.result["probability"]
+            prediction = self.__model.result["prediction"]
+            probability = self.__model.result["probability"]
 
             self.__update_labels(prediction, probability)
 
-            self.view.more_btn.configure(state=NORMAL)
-            self.view.report_btn.configure(state=NORMAL)
+            self.__view.more_btn.configure(state=NORMAL)
+            self.__view.report_btn.configure(state=NORMAL)
         else:
             # Error popup
             tkinter.messagebox.showerror(
-                parent=self.view,
+                parent=self.__view,
                 title="Error",
                 message="Could not classify!"
             )
 
-        self.view.progress_bar.stop()
-        self.view.progress_bar.configure(value=0, mode="determinate")
-        self.view.upload_btn.configure(state=NORMAL)
+        self.__view.progress_bar.stop()
+        self.__view.progress_bar.configure(value=0, mode="determinate")
+        self.__view.upload_btn.configure(state=NORMAL)
 
     def __more_info_button_clicked(self):
         pass
@@ -121,19 +121,19 @@ class Controller(object):
         :return: None
         """
 
-        path = self.view.save_file_dialog()
+        path = self.__view.save_file_dialog()
         if path != "":
             # TODO: set right parameters here
-            success = self.model.save_report(path, self.model.path, 2, 60, lang="hu")
+            success = self.__model.save_report(path, self.__model.path, 2, 60, lang="hu")
             if success:
                 tkinter.messagebox.showinfo(
-                    parent=self.view,
+                    parent=self.__view,
                     title="Success",
                     message="PDF Report generated successfully!"
                 )
             else:
                 tkinter.messagebox.showerror(
-                    parent=self.view,
+                    parent=self.__view,
                     title="Error",
                     message="Could not generate PDF Report!"
                 )
@@ -147,8 +147,8 @@ class Controller(object):
         :return: None
         """
 
-        self.view.result_label.configure(text="Eredmény:\n{}".format(prediction))
-        self.view.prob_meter.configure(amountused=int(confidence * 100))
+        self.__view.result_label.configure(text="Eredmény:\n{}".format(prediction))
+        self.__view.prob_meter.configure(amountused=int(confidence * 100))
 
         if confidence >= 0.9:
             bootstyle = "danger"
@@ -157,8 +157,8 @@ class Controller(object):
         else:
             bootstyle = "success"
 
-        self.view.result_label["bootstyle"] = "{}-outline-toolbutton".format(bootstyle)
-        self.view.prob_meter["bootstyle"] = bootstyle
+        self.__view.result_label["bootstyle"] = "{}-outline-toolbutton".format(bootstyle)
+        self.__view.prob_meter["bootstyle"] = bootstyle
 
     def __reset_results(self) -> None:
         """
@@ -167,8 +167,8 @@ class Controller(object):
         :return: None
         """
 
-        self.view.result_label["bootstyle"] = "primary-outline-toolbutton"
-        self.view.prob_meter["bootstyle"] = "primary"
-        self.view.prob_meter.configure(amountused=0)
-        self.view.more_btn.configure(state=DISABLED)
-        self.view.report_btn.configure(state=DISABLED)
+        self.__view.result_label["bootstyle"] = "primary-outline-toolbutton"
+        self.__view.prob_meter["bootstyle"] = "primary"
+        self.__view.prob_meter.configure(amountused=0)
+        self.__view.more_btn.configure(state=DISABLED)
+        self.__view.report_btn.configure(state=DISABLED)
