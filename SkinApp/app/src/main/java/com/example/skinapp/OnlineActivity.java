@@ -159,7 +159,8 @@ public class OnlineActivity extends AppCompatActivity {
                             name.setText(myObject.get("prediction").toString());
                             percentage.setText(myObject.get("probability").toString().substring(2,4)+" %");
                             progressBar.setProgress(Integer.parseInt(myObject.get("probability").toString().substring(2,4)));
-                            legyogy(name.getText().toString());
+                            Log.i("Mytag",myObject.get("prediction").toString());
+                            legyogy(myObject.get("prediction").toString());
                         } catch (JSONException | IOException e) {
                             e.printStackTrace();
                         }
@@ -169,37 +170,37 @@ public class OnlineActivity extends AppCompatActivity {
         });
     }
     public void legyogy(String name){
-        if (name == "Melanocytic nevi"){
-            gyogy.setText("dont know");
-            leiras.setText("Leírás: \n A melanocitikus nevus (más néven nevus nevus, nevus-cell nevus és általában anyajegy) egyfajta melanocitikus daganat, amely nevus sejteket tartalmaz. Egyes források az anyajegy kifejezést a \"melanocitikus nevus\"-szal azonosítják, de vannak olyan források is, amelyek az anyajegy kifejezést bármely nevus-formával azonosítják.");
+        if (name.equals("Melanocytic nevi")){
+            gyogy.setText("Műtét");
+            leiras.setText("A melanocitikus nevus (más néven nevus nevus, nevus-cell nevus és általában anyajegy) egyfajta melanocitikus daganat, amely nevus sejteket tartalmaz. Egyes források az anyajegy kifejezést a \"melanocitikus nevus\"-szal azonosítják.");
         }
-        else if (name == "Melanoma"){
-            gyogy.setText("dont know");
-            leiras.setText("Leírás: \n -");
+        else if (name.equals("Melanoma")){
+            gyogy.setText("Dacarbazine");
+            leiras.setText("A melanóma vagy melanoma malignum a bőr pigmenttermelő sejtjeiből (melanocyta) kiinduló rosszindulatú daganat. Kialakulhat már meglévő anyajegyből különösen akkor, ha az állandó károsító ingernek van kitéve (erős UV sugárzás, mechanikai ártalom), de megjelenhet anyajegymentes bőrfelületen is.\n -");
         }
-        else if (name == "Benign keratosis-like lesion"){
-            gyogy.setText("dont know");
-            leiras.setText("Leírás: \n -");
+        else if (name.equals("Benign keratosis-like lesion")){
+            gyogy.setText("Nincs szükség rá");
+            leiras.setText("A seborrhoeás keratosis (seb-o-REE-ik ker-uh-TOE-sis) egy gyakori jóindulatú bőrnövekedés, hasonlóan az anyajegyhez. A legtöbb embernek élete során lesz legalább egy. Általában a felnőttkor közepén jelennek meg, és gyakoriságuk az életkorral növekszik.\n -");
         }
-        else if (name == "Basal cell carcinoma"){
-            gyogy.setText("dont know");
-            leiras.setText("Leírás: \n -");
+        else if (name.equals("Basal cell carcinoma")){
+            gyogy.setText("Topical antineoplastic");
+            leiras.setText("A bazálissejtes karcinóma a bőrrák egy fajtája, amely leggyakrabban a napsugárzásnak kitett bőrterületeken, például az arcon alakul ki. A barna és fekete bőrön a bazálissejtes karcinóma gyakran úgy néz ki, mint egy barna vagy fényes fekete dudor, amelynek szegélye van.\n -");
         }
-        else if (name == "Actinic keratose"){
-            gyogy.setText("dont know");
-            leiras.setText("Leírás: \n -");
+        else if (name.equals("Actinic keratose")){
+            gyogy.setText("Fluorouracil, Imiquimod");
+            leiras.setText("Az aktinikus keratózisok (más néven szoláris keratózisok) száraz, pikkelyes bőrfoltok, amelyeket a nap károsított. A foltok általában nem súlyosak. De van egy kis esély, hogy bőrrákká váljanak, ezért fontos, hogy elkerülje a bőr további károsodását.\n -");
         }
-        else if (name == "Vascular lesion"){
-            gyogy.setText("dont know");
-            leiras.setText("Leírás: \n -");
+        else if (name.equals("Vascular lesion")){
+            gyogy.setText("Prednisone,  Propranolol");
+            leiras.setText("Az érrendszeri elváltozások a bőr és a mögöttes szövetek viszonylag gyakori rendellenességei, ismertebb nevén anyajegyek.\n -");
         }
-        else if (name == "Dermatofibroma"){
-            gyogy.setText("dont know");
-            leiras.setText("Leírás: \n -");
+        else if (name.equals("Dermatofibroma")){
+            gyogy.setText("Műtét");
+            leiras.setText("A különösen nőknél gyakran előforduló jóindulatú, a bőr felszínéből kiemelkedő csomó, a dermatofibromának vagy fibrosus histiocytomának nevezett elváltozás.\n -");
         }
         else{
-            gyogy.setText("dont know");
-            leiras.setText("Leírás: \n -");
+            gyogy.setText("Nem meghatározható");
+            leiras.setText(" \n -");
         }
     }
     private void openCamera() {
@@ -273,12 +274,10 @@ public class OnlineActivity extends AppCompatActivity {
 
                 Canvas canvas = myPage.getCanvas();
 
-                canvas.drawBitmap(scaledbmp, 56, 40, paint);
+                //canvas.drawBitmap(kep.get, 56, 40, paint);
 
                 title.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
-
                 title.setTextSize(15);
-
                 title.setColor(ContextCompat.getColor(OnlineActivity.this, R.color.purple_200));
 
                 canvas.drawText("SKIN NETWORK", 209, 100, title);
@@ -288,7 +287,11 @@ public class OnlineActivity extends AppCompatActivity {
                 title.setColor(ContextCompat.getColor(OnlineActivity.this, R.color.purple_200));
                 title.setTextSize(15);
                 title.setTextAlign(Paint.Align.CENTER);
-                canvas.drawText("This is sample document which we have created.", 396, 560, title);
+                canvas.drawText("Név: "+name.getText(), 396, 560, title);
+                canvas.drawText("Pontosság: "+percentage.getText(), 396, 560, title);
+                canvas.drawText("Gyógyszer: "+gyogy.getText(), 396, 560, title);
+                canvas.drawText(""+leiras.getText(), 396, 560, title);
+
                 pdfDocument.finishPage(myPage);
                 Date currentTime = Calendar.getInstance().getTime();
                 File file = new File(Environment.getExternalStorageDirectory(), "Diagnoses_"+currentTime+".pdf");
