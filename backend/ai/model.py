@@ -45,8 +45,8 @@ def preprocess_img(json_data: str, headers) -> np.ndarray:
         img = np.asarray(img_array, dtype=np.float32)
 
     elif headers["client"] == "mobile":
-        # temp = json.dumps(json_data)
-        body_dict = json.loads(json_data)
+        temp = json.dumps(json_data)
+        body_dict = json.loads(temp)
 
         image_png = base64.b64decode(body_dict["image"])
         pil_img = Image.open(BytesIO(image_png)).convert("RGB")
