@@ -71,7 +71,7 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/anton"
                     android:gravity="right"
-                    android:text="Diagnoses"
+                    android:text="Diagnózis"
                     android:textColor="#292828"
                     android:textSize="34sp"
                     android:textStyle="bold" />
@@ -91,7 +91,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="@font/anton"
                 android:gravity="center"
-                android:text="Upload 📁 a picture or take a picture using the camera 📷 function!"
+                android:text="Tölts fel 📁 képet, vagy készíts egy képet a kamera 📷 funkcióval!"
                 android:textColor="#201D1D"
                 android:textSize="20sp" />
 
@@ -179,7 +179,7 @@
                                 android:layout_weight="1"
                                 android:fontFamily="sans-serif-black"
                                 android:gravity="center"
-                                android:text="Result"
+                                android:text="Eredmény"
                                 android:textColor="#FBFBFB"
                                 android:textSize="24sp" />
 

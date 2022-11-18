@@ -21,7 +21,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:background="#f5f5f5"
+            android:backgroundTint="#f5f5f5"
             android:orientation="vertical">
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="37dp" />
 
             <TextView
                 android:id="@+id/textView4"
@@ -31,9 +37,9 @@
                 android:fontFamily="@font/abril_fatface"
                 android:fontFeatureSettings="smcp"
                 android:gravity="center_horizontal"
-                android:text="Start your"
+                android:text="Kezdje el"
                 android:textColor="#292828"
-                android:textSize="48sp"
+                android:textSize="40sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -44,9 +50,9 @@
                 android:fontFamily="@font/abril_fatface"
                 android:fontFeatureSettings="smcp"
                 android:gravity="center_horizontal"
-                android:text="successful"
+                android:text="a sikeres"
                 android:textColor="#2196F3"
-                android:textSize="48sp"
+                android:textSize="40sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -57,24 +63,24 @@
                 android:fontFamily="@font/abril_fatface"
                 android:fontFeatureSettings="smcp"
                 android:gravity="center_horizontal"
-                android:text="medical journey!"
+                android:text=" orvosi kalandját!"
                 android:textColor="#292828"
-                android:textSize="48sp"
+                android:textSize="40sp"
                 android:textStyle="bold" />
 
             <ImageView
                 android:id="@+id/imageView2"
                 android:layout_width="match_parent"
                 android:layout_height="350dp"
-                app:srcCompat="@drawable/a" />
+                app:srcCompat="@drawable/b" />
 
             <Button
                 android:id="@+id/btn1"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:backgroundTint="#2196F3"
-                android:text="Get started   ➡"
+                android:backgroundTint="#3F51B5"
+                android:text="Vágjunk bele  ➡"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp" />
         </LinearLayout>

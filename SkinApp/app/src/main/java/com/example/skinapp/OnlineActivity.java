@@ -68,11 +68,11 @@ public class OnlineActivity extends AppCompatActivity {
     // constant code for runtime permissions
     private static final int PERMISSION_REQUEST_CODE = 200;
     private static final int PICK_IMAGE = 100;
-    public String postUrl= "http://" + "192.168.0.68" + ":" + 8080 + "/predict";
+    public String postUrl= "http://" + "192.168.0.25"+ ":" + 8080 + "/predict";
     public String postBody= "";
     public JSONObject jsonString;
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    TextView name,percentage;
+    TextView name,percentage,gyogy,leiras;
     ProgressBar progressBar;
     public static String encodeTobase64(Bitmap image) {
         Bitmap immagex=image;
@@ -143,7 +143,7 @@ public class OnlineActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         Toast.makeText(OnlineActivity.this,
-                                "Something went wrong:" + " " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                "Hiba történt:" + " " + e.getMessage(), Toast.LENGTH_LONG).show();
                         call.cancel();
                     }
                 });
@@ -159,6 +159,7 @@ public class OnlineActivity extends AppCompatActivity {
                             name.setText(myObject.get("prediction").toString());
                             percentage.setText(myObject.get("probability").toString().substring(2,4)+" %");
                             progressBar.setProgress(Integer.parseInt(myObject.get("probability").toString().substring(2,4)));
+                            legyogy(name.getText().toString());
                         } catch (JSONException | IOException e) {
                             e.printStackTrace();
                         }
@@ -167,7 +168,40 @@ public class OnlineActivity extends AppCompatActivity {
             }
         });
     }
-
+    public void legyogy(String name){
+        if (name == "Melanocytic nevi"){
+            gyogy.setText("dont know");
+            leiras.setText("Leírás: \n A melanocitikus nevus (más néven nevus nevus, nevus-cell nevus és általában anyajegy) egyfajta melanocitikus daganat, amely nevus sejteket tartalmaz. Egyes források az anyajegy kifejezést a \"melanocitikus nevus\"-szal azonosítják, de vannak olyan források is, amelyek az anyajegy kifejezést bármely nevus-formával azonosítják.");
+        }
+        else if (name == "Melanoma"){
+            gyogy.setText("dont know");
+            leiras.setText("Leírás: \n -");
+        }
+        else if (name == "Benign keratosis-like lesion"){
+            gyogy.setText("dont know");
+            leiras.setText("Leírás: \n -");
+        }
+        else if (name == "Basal cell carcinoma"){
+            gyogy.setText("dont know");
+            leiras.setText("Leírás: \n -");
+        }
+        else if (name == "Actinic keratose"){
+            gyogy.setText("dont know");
+            leiras.setText("Leírás: \n -");
+        }
+        else if (name == "Vascular lesion"){
+            gyogy.setText("dont know");
+            leiras.setText("Leírás: \n -");
+        }
+        else if (name == "Dermatofibroma"){
+            gyogy.setText("dont know");
+            leiras.setText("Leírás: \n -");
+        }
+        else{
+            gyogy.setText("dont know");
+            leiras.setText("Leírás: \n -");
+        }
+    }
     private void openCamera() {
         Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(intent, 7);
@@ -180,6 +214,8 @@ public class OnlineActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_online);
+        gyogy=findViewById(R.id.gyogy);
+        leiras=findViewById(R.id.leiras);
         sendBtn=findViewById(R.id.sendBtn);
         kep=findViewById(R.id.imageView5);
         name=findViewById(R.id.name);
@@ -211,8 +247,8 @@ public class OnlineActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                builder.setMessage("Where do you want to get the picture from?").setPositiveButton("Camera", dialogClickListener)
-                        .setNegativeButton("Gallery", dialogClickListener).show();
+                builder.setMessage("Honnan szeretnéd feltölteni a képet?").setPositiveButton("Kamera", dialogClickListener)
+                        .setNegativeButton("Galéria", dialogClickListener).show();
             }
         });
         menuButton = findViewById(R.id.backButton);
@@ -259,7 +295,7 @@ public class OnlineActivity extends AppCompatActivity {
 
                 try {
                     pdfDocument.writeTo(new FileOutputStream(file));
-                    Toast.makeText(OnlineActivity.this, "PDF file generated successfully.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(OnlineActivity.this, "PDF fájl legenerálva.", Toast.LENGTH_SHORT).show();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

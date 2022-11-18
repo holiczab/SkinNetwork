@@ -42,7 +42,7 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/anton"
                     android:gravity="right"
-                    android:text="Diagnoses"
+                    android:text="Diagnózis"
                     android:textColor="#292828"
                     android:textSize="34sp"
                     android:textStyle="bold" />
@@ -70,7 +70,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/anton"
                     android:gravity="center"
-                    android:text="Name: "
+                    android:text="Név:"
                     android:textColor="#201D1D"
                     android:textSize="24sp" />
 
@@ -112,7 +112,7 @@
                     android:layout_marginLeft="50dp"
                     android:fontFamily="@font/anton"
                     android:gravity="center"
-                    android:text="Percentage:"
+                    android:text="Pontosság:"
                     android:textColor="#201D1D"
                     android:textSize="24sp" />
 
@@ -154,7 +154,7 @@
                     android:layout_marginLeft="50dp"
                     android:fontFamily="@font/anton"
                     android:gravity="center"
-                    android:text="Medicine:"
+                    android:text="Gyógyszer:"
                     android:textColor="#201D1D"
                     android:textSize="24sp" />
 
@@ -164,7 +164,7 @@
                     android:layout_weight="1" />
 
                 <TextView
-                    android:id="@+id/namee"
+                    android:id="@+id/gyogy"
                     android:layout_width="123dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|right"
@@ -200,7 +200,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="@font/anton"
                 android:gravity="center"
-                android:text="Seriousness:"
+                android:text="Súlyosság:"
                 android:textColor="#201D1D"
                 android:textSize="24sp" />
 
@@ -238,16 +238,16 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/textView2"
+                            android:id="@+id/leiras"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             android:fontFamily="sans-serif-black"
                             android:gravity="center"
-                            android:text="Description"
+                            android:text="Leírás:"
                             android:textColor="#000000"
-                            android:textSize="24sp" />
+                            android:textSize="16sp" />
 
                     </LinearLayout>
 

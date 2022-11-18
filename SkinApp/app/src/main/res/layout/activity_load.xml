@@ -24,7 +24,7 @@
         android:fontFamily="@font/suez_one"
         android:fontFeatureSettings="smcp"
         android:gravity="center"
-        android:text="Loading ..."
+        android:text="Betöltés ..."
         android:textColor="#0F538A"
         android:textSize="34sp"
         android:textStyle="bold" />
