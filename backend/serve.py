@@ -1,8 +1,9 @@
 import json
 import traceback
 
+import yaml
+
 from flask import Flask, Response, request
-from PIL import Image  # type: ignore
 
 from ai.model import do_inference
 from utils import forge_fail_response
@@ -30,4 +31,10 @@ def predict():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=True, port=8080)
+    with open("startup_cfg.yaml", "r") as cfg_yaml:
+        try:
+            cfg = yaml.safe_load(cfg_yaml)
+        except yaml.YAMLError as exc:
+            print(exc)
+    
+    app.run(host=cfg["host"], debug=cfg["debug"], port=cfg["port"])

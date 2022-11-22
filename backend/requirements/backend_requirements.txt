@@ -1,3 +1,6 @@
-flask
-onnx
+Flask
+numpy
 onnxruntime
+Pillow
+requests
+pyyaml
