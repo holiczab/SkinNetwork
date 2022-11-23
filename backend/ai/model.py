@@ -48,7 +48,7 @@ def preprocess_img(json_data: str, headers) -> np.ndarray:
         temp = json.dumps(json_data)
         body_dict = json.loads(temp)
 
-        image_png = base64.b64decode(body_dict["image"])
+        image_png = base64.b64decode(json.loads(body_dict)["image"])
         pil_img = Image.open(BytesIO(image_png)).convert("RGB")
         img = np.asarray(pil_img, dtype=np.float32)
 
@@ -65,11 +65,13 @@ def predict(img: np.ndarray) -> np.ndarray:
 
 
 def postprocess_prediction(ort_pred: np.ndarray) -> Tuple[str, float]:
-    # yolov5 output last dimension - [xywh,objectness,class confidences]
+    
+    # yolov5 output last dimension - [xywh, objectness score, class confidences]
     pred = ort_pred.squeeze()
-    pred = pred[pred[:, 5] > OBJECTNESS_CONFIDENCE_THRESHOLD]
-
-    if len(pred) == 0:
+    
+    pred_objectness_filtered = pred[pred[:, 5] > OBJECTNESS_CONFIDENCE_THRESHOLD]
+    print(len(pred_objectness_filtered) / len(pred) )
+    if len(pred_objectness_filtered) / len(pred) < 0.1:
         return ("dont know", 0.0)
 
     class_probits = pred[:, 5:]
@@ -77,16 +79,17 @@ def postprocess_prediction(ort_pred: np.ndarray) -> Tuple[str, float]:
     box_max_indices = np.argmax(class_probits, axis=1)
     box_max_prob_values = class_probits[range(len(class_probits)), box_max_indices]
 
-    max_prob_index = np.argmax(box_max_prob_values)
-    max_prob_class_index = box_max_indices[max_prob_index]
-    max_prob_val = box_max_prob_values[max_prob_index]
+    max_element = np.bincount(box_max_indices).argmax()
+    
+    #print("bincount:",np.bincount(box_max_indices))
+    best_class_prob_values = box_max_prob_values[box_max_indices == max_element]
+    #print("best_class_values:",np.average(best_class_values))
+    
+    best_class_avg_prob = np.average(best_class_prob_values)
 
-    if max_prob_val < CLASS_PROBABILITY_THRESHOLD:
-        return ("dont know", 0.0)
+    class_str = CLASS_MAPPING[int(max_element)]
 
-    class_str = CLASS_MAPPING[int(max_prob_class_index)]
-
-    return (class_str, float(max_prob_val))
+    return (class_str, float(best_class_avg_prob))
 
 
 def do_inference(json_data: str, headers) -> Tuple[str, float]:
