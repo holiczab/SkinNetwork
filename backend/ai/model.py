@@ -14,7 +14,7 @@ INPUT_SHAPE: List[int] = [640, 640, 3]  # yolov5l input size
 ONNX_PATH: Path = Path(RESOURCES_PATH / "small.onnx")  # type: ignore
 
 OBJECTNESS_CONFIDENCE_THRESHOLD: float = 0.5
-CLASS_PROBABILITY_THRESHOLD: float = 0.7
+CLASS_PROBABILITY_THRESHOLD: float = 0.679
 CLASS_MAPPING: Dict[int, str] = {
     0: "Melanocytic nevi",
     1: "Melanoma",
@@ -81,6 +81,7 @@ def postprocess_prediction(ort_pred: np.ndarray) -> Tuple[str, float]:
 
     best_class_avg_prob = np.average(best_class_prob_values)
     
+    print(best_class_avg_prob)
     if best_class_avg_prob < CLASS_PROBABILITY_THRESHOLD:
         return ("dont know",0.0)
     

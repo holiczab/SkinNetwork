@@ -15,7 +15,7 @@ def client_get_test_desktop(image_path: Path):
     json_data = json.dumps(np.array(pil_img).tolist())
     json_data = json.dumps({"files": {"image": json_data}})
     resp = rqs.get(
-        "http://127.0.0.1:8080/predict", json=json_data, headers={"client": "desktop"}
+        "http://0.0.0.0:8080/predict", json=json_data, headers={"client": "desktop"}
     )
 
     assert resp.json() is not None
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     client_get_test_desktop(utils.BACKEND_ROOT / "resources" / "vascular_lesion.jpeg")
     
     print("sending birthmark...")
-    client_get_test_desktop(utils.BACKEND_ROOT / "resources" / "test_birthmark.jpeg")
+    client_get_test_desktop(utils.BACKEND_ROOT / "resources" / "birthmark.jpg")
     
     print("sending negative example...")
-    client_get_test_desktop(utils.BACKEND_ROOT / "resources" / "test_negative.png")
+    client_get_test_desktop(utils.BACKEND_ROOT / "resources" / "download.jpeg")

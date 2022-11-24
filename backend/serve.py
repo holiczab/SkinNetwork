@@ -32,9 +32,7 @@ def predict():
 
 if __name__ == "__main__":
     with open("startup_cfg.yaml", "r") as cfg_yaml:
-        try:
-            cfg = yaml.safe_load(cfg_yaml)
-        except yaml.YAMLError as exc:
-            print(exc)
+        cfg = yaml.safe_load(cfg_yaml)
+            
     
     app.run(host=cfg["host"], debug=cfg["debug"], port=cfg["port"])
