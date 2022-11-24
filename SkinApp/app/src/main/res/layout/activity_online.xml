@@ -26,13 +26,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <ImageButton
-                    android:id="@+id/backButton"
-                    android:layout_width="49dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center|center_horizontal|center_vertical"
-                    android:background="@drawable/ic_launcher" />
-
                 <TextView
                     android:id="@+id/textView"
                     android:layout_width="385dp"
@@ -75,7 +68,7 @@
                     android:textSize="24sp" />
 
                 <Space
-                    android:layout_width="127dp"
+                    android:layout_width="131dp"
                     android:layout_height="24dp"
                     android:layout_weight="1" />
 
@@ -154,12 +147,12 @@
                     android:layout_marginLeft="50dp"
                     android:fontFamily="@font/anton"
                     android:gravity="center"
-                    android:text="Gyógyszer:"
+                    android:text="Gyógyír:"
                     android:textColor="#201D1D"
                     android:textSize="24sp" />
 
                 <Space
-                    android:layout_width="38dp"
+                    android:layout_width="66dp"
                     android:layout_height="24dp"
                     android:layout_weight="1" />
 
@@ -173,7 +166,7 @@
                     android:gravity="center"
                     android:text="-"
                     android:textColor="#8C5050"
-                    android:textSize="20sp" />
+                    android:textSize="24sp" />
 
                 <Space
                     android:layout_width="49dp"
@@ -264,12 +257,6 @@
                 <Space
                     android:layout_width="50dp"
                     android:layout_height="20dp" />
-
-                <ImageButton
-                    android:id="@+id/emailBtn"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@drawable/ic_mail" />
 
                 <Space
                     android:layout_width="50dp"

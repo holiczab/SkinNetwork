@@ -55,13 +55,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <ImageButton
-                    android:id="@+id/backButton"
-                    android:layout_width="49dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center|center_horizontal|center_vertical"
-                    android:background="@drawable/ic_launcher" />
-
                 <TextView
                     android:id="@+id/textView"
                     android:layout_width="385dp"
@@ -91,7 +84,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="@font/anton"
                 android:gravity="center"
-                android:text="Tölts fel 📁 képet, vagy készíts egy képet a kamera 📷 funkcióval!"
+                android:text="Tölts fel 📁 képet, vagy készíts egy képet a kamera 📷 funkció segítségével!"
                 android:textColor="#201D1D"
                 android:textSize="20sp" />
 

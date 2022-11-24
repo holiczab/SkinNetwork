@@ -76,7 +76,7 @@ public class OnlineActivity extends AppCompatActivity {
     // constant code for runtime permissions
     private static final int PERMISSION_REQUEST_CODE = 200;
     private static final int PICK_IMAGE = 100;
-    public String postUrl= "http://" + "192.168.119.148"+ ":" + 8080 + "/predict";
+    public String postUrl= "http://" + "192.168.0.25"+ ":" + 8080 + "/predict";
     public String postBody= "";
     public JSONObject jsonString;
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -264,6 +264,7 @@ public class OnlineActivity extends AppCompatActivity {
                 pdfButton.setEnabled(true);
             }
         });
+        /*
         menuButton = findViewById(R.id.backButton);
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -271,13 +272,7 @@ public class OnlineActivity extends AppCompatActivity {
                 startActivity(new Intent(OnlineActivity.this,AllDiagnosesActivity.class));
             }
         });
-        emailBtn = findViewById(R.id.emailBtn);
-        emailBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        */
 
         pdfButton = findViewById(R.id.pdfButton);
         pdfButton.setEnabled(false);
@@ -331,7 +326,7 @@ public class OnlineActivity extends AppCompatActivity {
                 c.setColor(ContextCompat.getColor(OnlineActivity.this, R.color.black));
                 c.setTextSize(20);
                 c.setTextAlign(Paint.Align.LEFT);
-                canvas.drawText("Gyógyszer: "+gyogy.getText(), 70,250, c);
+                canvas.drawText("Gyógyír: "+gyogy.getText(), 70,250, c);
 
                 d.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL));
                 d.setColor(ContextCompat.getColor(OnlineActivity.this, R.color.black));

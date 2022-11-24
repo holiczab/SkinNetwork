@@ -60,7 +60,7 @@ public class OfflineActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 100;
     Uri imageUri;
     public static final int RequestPermissionCode = 1;
-    ImageButton menuButton,liveBtn;
+    ImageButton liveBtn;
     ImageView kep;
     TextView name,percentage;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
@@ -186,13 +186,7 @@ public class OfflineActivity extends AppCompatActivity {
                 openCamera();
             }
         });
-        menuButton = findViewById(R.id.backButton);
-        menuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(OfflineActivity.this,AllDiagnosesActivity.class));
-            }
-        });
+
 
 
     }
@@ -332,7 +326,7 @@ public class OfflineActivity extends AppCompatActivity {
 
                 if (k == 1) {
                     name.setText(classes[Math.round(values.get(maxPos)[5])]);
-                    percentage.setText(String.valueOf(maxConfidence));
+                    percentage.setText((Math.floor(maxConfidence * 100) / 100)+"%");
                 } else if (k == 2) {
                     return classes[Math.round(values.get(maxPos)[5])] + "\n" + maxConfidence;
                 }
