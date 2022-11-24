@@ -117,7 +117,7 @@
                     android:textSize="24sp" />
 
                 <Space
-                    android:layout_width="127dp"
+                    android:layout_width="89dp"
                     android:layout_height="24dp"
                     android:layout_weight="1" />
 
@@ -173,19 +173,12 @@
                     android:gravity="center"
                     android:text="-"
                     android:textColor="#8C5050"
-                    android:textSize="16sp" />
+                    android:textSize="20sp" />
 
                 <Space
                     android:layout_width="49dp"
                     android:layout_height="24dp"
                     android:layout_weight="1" />
-
-                <ImageButton
-                    android:id="@+id/imageButton5"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/ic_star" />
 
             </LinearLayout>
 
@@ -219,7 +212,7 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_width="350dp"
-                android:layout_height="120dp"
+                android:layout_height="139dp"
                 android:layout_gravity="center"
                 app:cardBackgroundColor="#ECE8E8"
                 app:cardCornerRadius="11dp"
@@ -273,17 +266,7 @@
                     android:layout_height="20dp" />
 
                 <ImageButton
-                    android:id="@+id/loadBtn"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@drawable/ic_save" />
-
-                <Space
-                    android:layout_width="50dp"
-                    android:layout_height="20dp" />
-
-                <ImageButton
-                    android:id="@+id/cameraBtn"
+                    android:id="@+id/emailBtn"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:background="@drawable/ic_mail" />

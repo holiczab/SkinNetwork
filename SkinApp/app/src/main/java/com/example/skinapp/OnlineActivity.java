@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+
+import android.annotation.SuppressLint;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.Base64;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -47,8 +50,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -59,21 +66,24 @@ import okhttp3.Response;
 
 public class OnlineActivity extends AppCompatActivity {
 
-    ImageButton menuButton,pdfButton,sendBtn;
+    ImageButton menuButton,pdfButton,sendBtn,emailBtn;
     int pageHeight = 1120;
     int pagewidth = 792;
     Uri imageUri;
     Bitmap bmp, scaledbmp;
     ImageView kep;
+
     // constant code for runtime permissions
     private static final int PERMISSION_REQUEST_CODE = 200;
     private static final int PICK_IMAGE = 100;
-    public String postUrl= "http://" + "192.168.0.25"+ ":" + 8080 + "/predict";
+    public String postUrl= "http://" + "192.168.119.148"+ ":" + 8080 + "/predict";
     public String postBody= "";
     public JSONObject jsonString;
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    public String CURRENT_PDF="";
     TextView name,percentage,gyogy,leiras;
     ProgressBar progressBar;
+
     public static String encodeTobase64(Bitmap image) {
         Bitmap immagex=image;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -161,6 +171,7 @@ public class OnlineActivity extends AppCompatActivity {
                             progressBar.setProgress(Integer.parseInt(myObject.get("probability").toString().substring(2,4)));
                             Log.i("Mytag",myObject.get("prediction").toString());
                             legyogy(myObject.get("prediction").toString());
+
                         } catch (JSONException | IOException e) {
                             e.printStackTrace();
                         }
@@ -172,7 +183,7 @@ public class OnlineActivity extends AppCompatActivity {
     public void legyogy(String name){
         if (name.equals("Melanocytic nevi")){
             gyogy.setText("Műtét");
-            leiras.setText("A melanocitikus nevus (más néven nevus nevus, nevus-cell nevus és általában anyajegy) egyfajta melanocitikus daganat, amely nevus sejteket tartalmaz. Egyes források az anyajegy kifejezést a \"melanocitikus nevus\"-szal azonosítják.");
+            leiras.setText("A melanocitikus nevus (más néven nevus nevus, nevus-cell nevus és általában anyajegy) egyfajta melanocitikus daganat, amely nevus sejteket tartalmaz.");
         }
         else if (name.equals("Melanoma")){
             gyogy.setText("Dacarbazine");
@@ -250,6 +261,7 @@ public class OnlineActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
                 builder.setMessage("Honnan szeretnéd feltölteni a képet?").setPositiveButton("Kamera", dialogClickListener)
                         .setNegativeButton("Galéria", dialogClickListener).show();
+                pdfButton.setEnabled(true);
             }
         });
         menuButton = findViewById(R.id.backButton);
@@ -259,7 +271,16 @@ public class OnlineActivity extends AppCompatActivity {
                 startActivity(new Intent(OnlineActivity.this,AllDiagnosesActivity.class));
             }
         });
+        emailBtn = findViewById(R.id.emailBtn);
+        emailBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
         pdfButton = findViewById(R.id.pdfButton);
+        pdfButton.setEnabled(false);
         pdfButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -267,6 +288,11 @@ public class OnlineActivity extends AppCompatActivity {
 
                 Paint paint = new Paint();
                 Paint title = new Paint();
+                Paint a = new Paint();
+                Paint b = new Paint();
+                Paint c = new Paint();
+                Paint d = new Paint();
+                Paint de = new Paint();
 
                 PdfDocument.PageInfo mypageInfo = new PdfDocument.PageInfo.Builder(pagewidth, pageHeight, 1).create();
 
@@ -274,28 +300,79 @@ public class OnlineActivity extends AppCompatActivity {
 
                 Canvas canvas = myPage.getCanvas();
 
-                //canvas.drawBitmap(kep.get, 56, 40, paint);
-
                 title.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
-                title.setTextSize(15);
-                title.setColor(ContextCompat.getColor(OnlineActivity.this, R.color.purple_200));
+                title.setTextSize(30);
+                title.setTextAlign(Paint.Align.LEFT);
+                title.setColor(ContextCompat.getColor(OnlineActivity.this, R.color.teal_700));
 
-                canvas.drawText("SKIN NETWORK", 209, 100, title);
-                canvas.drawText("Skin disease diagnoses", 209, 80, title);
+                canvas.drawText("SKIN NETWORK - Bőrprobléma diagnózis", 70, 50, title);
 
-                title.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL));
-                title.setColor(ContextCompat.getColor(OnlineActivity.this, R.color.purple_200));
-                title.setTextSize(15);
-                title.setTextAlign(Paint.Align.CENTER);
-                canvas.drawText("Név: "+name.getText(), 396, 560, title);
-                canvas.drawText("Pontosság: "+percentage.getText(), 396, 560, title);
-                canvas.drawText("Gyógyszer: "+gyogy.getText(), 396, 560, title);
-                canvas.drawText(""+leiras.getText(), 396, 560, title);
+
+                kep.buildDrawingCache(true);
+                Bitmap bit = kep.getDrawingCache(true);
+                Bitmap resizedBitmap = Bitmap.createScaledBitmap(bit, 300, 100, false);
+
+                canvas.drawBitmap(resizedBitmap, 400, 130, paint);
+                kep.destroyDrawingCache();
+
+                a.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL));
+                a.setColor(ContextCompat.getColor(OnlineActivity.this, R.color.black));
+                a.setTextSize(20);
+                a.setTextAlign(Paint.Align.LEFT);
+                canvas.drawText("Név: "+name.getText(), 70, 150, a);
+
+                b.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL));
+                b.setColor(ContextCompat.getColor(OnlineActivity.this, R.color.black));
+                b.setTextSize(20);
+                b.setTextAlign(Paint.Align.LEFT);
+                canvas.drawText("Pontosság: "+percentage.getText(),70,200, b);
+
+                c.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL));
+                c.setColor(ContextCompat.getColor(OnlineActivity.this, R.color.black));
+                c.setTextSize(20);
+                c.setTextAlign(Paint.Align.LEFT);
+                canvas.drawText("Gyógyszer: "+gyogy.getText(), 70,250, c);
+
+                d.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL));
+                d.setColor(ContextCompat.getColor(OnlineActivity.this, R.color.black));
+                d.setTextSize(20);
+                d.setTextAlign(Paint.Align.LEFT);
+                String newl="";
+                String l= String.valueOf(leiras.getText());
+                String arr [] = l.split(" ");
+                int uj=300;
+                for (int i=0;i<arr.length;i++)
+                {
+                    newl+=arr[i]+" ";
+                    if(i%7==0 && i!=0) {
+                        uj+=20;
+                        canvas.drawText(newl, 70,uj, d);
+                        newl="";
+                    }
+                }
+                uj+=20;
+                canvas.drawText(newl, 70,uj, d);
+                de.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL));
+                de.setColor(ContextCompat.getColor(OnlineActivity.this, R.color.design_default_color_error));
+                de.setTextSize(10);
+                de.setTextAlign(Paint.Align.LEFT);
+                canvas.drawText("Ez az eszköz nem nyújt orvosi tanácsot, csak tájékoztató jellegű.", 70,uj+315, de);
+                canvas.drawText("Nem helyettesíti a professzionális orvosi tanácsot, diagnózist vagy kezelést.", 70,uj+330, de);
+                canvas.drawText("Mindig kérje orvosa vagy más képzett egészségügyi szakember útmutatását,", 70,uj+345, de);
+                canvas.drawText("ha bármilyen kérdése van az egészségével vagy egészségügyi állapotával kapcsolatban.", 70,uj+360, de);
 
                 pdfDocument.finishPage(myPage);
                 Date currentTime = Calendar.getInstance().getTime();
                 File file = new File(Environment.getExternalStorageDirectory(), "Diagnoses_"+currentTime+".pdf");
 
+                CURRENT_PDF="Diagnoses_"+currentTime+".pdf";
+
+                Intent viewPdf = new Intent(Intent.ACTION_VIEW);
+                viewPdf.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                Uri URI = FileProvider.getUriForFile(OnlineActivity.this, OnlineActivity.this.getApplicationContext().getPackageName() + ".provider", file);
+                viewPdf.setDataAndType(URI, "application/pdf");
+                viewPdf.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                OnlineActivity.this.startActivity(viewPdf);
                 try {
                     pdfDocument.writeTo(new FileOutputStream(file));
                     Toast.makeText(OnlineActivity.this, "PDF fájl legenerálva.", Toast.LENGTH_SHORT).show();
