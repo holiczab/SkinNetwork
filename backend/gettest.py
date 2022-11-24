@@ -46,4 +46,4 @@ if __name__ == "__main__":
     client_get_test_desktop(utils.BACKEND_ROOT / "resources" / "test_birthmark.jpeg")
     
     print("sending negative example...")
-    client_get_test_mobile(utils.BACKEND_ROOT / "resources" / "test_negative.png")
+    client_get_test_desktop(utils.BACKEND_ROOT / "resources" / "test_negative.png")

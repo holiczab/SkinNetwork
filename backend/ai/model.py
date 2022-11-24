@@ -13,8 +13,8 @@ from utils import *  # type: ignore
 INPUT_SHAPE: List[int] = [640, 640, 3]  # yolov5l input size
 ONNX_PATH: Path = Path(RESOURCES_PATH / "small.onnx")  # type: ignore
 
-OBJECTNESS_CONFIDENCE_THRESHOLD: float = 0.8
-CLASS_PROBABILITY_THRESHOLD: float = 0.8
+OBJECTNESS_CONFIDENCE_THRESHOLD: float = 0.5
+CLASS_PROBABILITY_THRESHOLD: float = 0.7
 CLASS_MAPPING: Dict[int, str] = {
     0: "Melanocytic nevi",
     1: "Melanoma",
@@ -65,16 +65,11 @@ def predict(img: np.ndarray) -> np.ndarray:
 
 
 def postprocess_prediction(ort_pred: np.ndarray) -> Tuple[str, float]:
+    # yolov5 output dimensions - [xywh, objectness score, class confidences]
     
-    # yolov5 output last dimension - [xywh, objectness score, class confidences]
     pred = ort_pred.squeeze()
     
-    pred_objectness_filtered = pred[pred[:, 5] > OBJECTNESS_CONFIDENCE_THRESHOLD]
-    print(len(pred_objectness_filtered) / len(pred) )
-    if len(pred_objectness_filtered) / len(pred) < 0.4:
-        return ("dont know", 0.0)
-
-    class_probits = pred_objectness_filtered
+    class_probits = pred[:,5:]
 
     box_max_indices = np.argmax(class_probits, axis=1)
     box_max_prob_values = class_probits[range(len(class_probits)), box_max_indices]
@@ -83,10 +78,12 @@ def postprocess_prediction(ort_pred: np.ndarray) -> Tuple[str, float]:
 
     print("bincount:",np.bincount(box_max_indices))
     best_class_prob_values = box_max_prob_values[box_max_indices == max_element]
-    #print("best_class_values:",np.average(best_class_values))
-    
-    best_class_avg_prob = np.average(best_class_prob_values)
 
+    best_class_avg_prob = np.average(best_class_prob_values)
+    
+    if best_class_avg_prob < CLASS_PROBABILITY_THRESHOLD:
+        return ("dont know",0.0)
+    
     class_str = CLASS_MAPPING[int(max_element)]
 
     return (class_str, float(best_class_avg_prob))
