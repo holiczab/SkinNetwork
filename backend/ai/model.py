@@ -48,7 +48,7 @@ def preprocess_img(json_data: str, headers) -> np.ndarray:
         temp = json.dumps(json_data)
         body_dict = json.loads(temp)
 
-        image_png = base64.b64decode(json.loads(body_dict)["image"])
+        image_png = base64.b64decode(body_dict["image"])
         pil_img = Image.open(BytesIO(image_png)).convert("RGB")
         img = np.asarray(pil_img, dtype=np.float32)
 
@@ -71,17 +71,17 @@ def postprocess_prediction(ort_pred: np.ndarray) -> Tuple[str, float]:
     
     pred_objectness_filtered = pred[pred[:, 5] > OBJECTNESS_CONFIDENCE_THRESHOLD]
     print(len(pred_objectness_filtered) / len(pred) )
-    if len(pred_objectness_filtered) / len(pred) < 0.1:
+    if len(pred_objectness_filtered) / len(pred) < 0.4:
         return ("dont know", 0.0)
 
-    class_probits = pred[:, 5:]
+    class_probits = pred_objectness_filtered
 
     box_max_indices = np.argmax(class_probits, axis=1)
     box_max_prob_values = class_probits[range(len(class_probits)), box_max_indices]
 
     max_element = np.bincount(box_max_indices).argmax()
-    
-    #print("bincount:",np.bincount(box_max_indices))
+
+    print("bincount:",np.bincount(box_max_indices))
     best_class_prob_values = box_max_prob_values[box_max_indices == max_element]
     #print("best_class_values:",np.average(best_class_values))
     
