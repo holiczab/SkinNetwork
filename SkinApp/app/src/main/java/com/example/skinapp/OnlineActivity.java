@@ -76,7 +76,8 @@ public class OnlineActivity extends AppCompatActivity {
     // constant code for runtime permissions
     private static final int PERMISSION_REQUEST_CODE = 200;
     private static final int PICK_IMAGE = 100;
-    public String postUrl= "http://" + "192.168.0.25"+ ":" + 8080 + "/predict";
+    //public String postUrl= "http://" + "192.168.0.25"+ ":" + 8080 + "/predict";
+    public String postUrl="http://skynet.elte.hu/skinnetwork/predict";
     public String postBody= "";
     public JSONObject jsonString;
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -166,10 +167,11 @@ public class OnlineActivity extends AppCompatActivity {
                         try {
                             //Toast.makeText(OnlineActivity.this,  response.body().string(), Toast.LENGTH_LONG).show();
                             JSONObject myObject = new JSONObject(response.body().string());
-                            name.setText(myObject.get("prediction").toString());
-                            percentage.setText(myObject.get("probability").toString().substring(2,4)+" %");
-                            progressBar.setProgress(Integer.parseInt(myObject.get("probability").toString().substring(2,4)));
                             Log.i("Mytag",myObject.get("prediction").toString());
+                            Log.i("Mytag",myObject.get("probability").toString());
+                            name.setText(myObject.get("prediction").toString());
+                            percentage.setText(((Math.floor(Double.parseDouble(String.valueOf(myObject.get("probability"))) * 100) / 100)*100 +" %").replace(".0 %"," %"));
+                            progressBar.setProgress((int) ((Math.floor(Double.parseDouble(String.valueOf(myObject.get("probability"))) * 100) / 100)*100));
                             legyogy(myObject.get("prediction").toString());
 
                         } catch (JSONException | IOException e) {
