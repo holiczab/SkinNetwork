@@ -50,7 +50,7 @@ class Model:
 
         json_data = json.dumps(np.array(opened_image).tolist())
         fh = json.dumps({"files": {"image": json_data}})
-        address = "http://127.0.0.1:8080/predict"
+        address = "http://skynet.elte.hu/skinnetwork/predict"
         resp = rqs.get(address, json=fh, headers={"client": "desktop"})
         if resp.headers["success"]:
             self.result = resp.json()
@@ -60,7 +60,7 @@ class Model:
     # Public static methods
     @staticmethod
     def save_report(image_save_path: str, skin_image_path: str,
-                    image_class: int, confidence: int, lang: str = "en") -> bool:
+                    image_class: str, confidence: int, lang: str = "en") -> bool:
         """
         Saving the report.
 
@@ -78,16 +78,6 @@ class Model:
             pdf_title = "Pdf report"
             pdf.set_title(pdf_title)
             lang_index = {"en": 0, "hu": 1}[lang]
-
-            disease_category_dict = {
-                0: ["melanocytic nevi (nv)", "Melanocytic nevus"],
-                1: ["melanoma (mel)", "Melanóma"],
-                2: ["benign keratosis-like lesions (bkl)", "Jóindulatú eredetű keratózis jellegű elváltozás"],
-                3: ["basal cell carcinoma (bcc)", "Bazális sejtkarcinóma"],
-                4: ["actinic keratoses (akiec)", "Aktinikus keratózis"],
-                5: ["vascular lesions (vasc)", "Érkárosodás"],
-                6: ["dermatofibroma (df)", "Dermatofibroma"]
-            }
 
             m = 16
             pdf.add_page()
@@ -137,7 +127,7 @@ class Model:
             result_text_lang = ["Result", "Eredmény"][lang_index]
             confidence_text_lang = ["Confidence", "Bizonyosság"][lang_index]
 
-            image_class_text = disease_category_dict[image_class][lang_index]
+            image_class_text = image_class
             result_text = result_text_lang + ": {}".format(image_class_text)
             confidence_text = confidence_text_lang + ": {}%".format(confidence)
 

@@ -123,8 +123,9 @@ class Controller(object):
 
         path = self.__view.save_file_dialog()
         if path != "":
-            # TODO: set right parameters here
-            success = self.__model.save_report(path, self.__model.path, 2, 60, lang="hu")
+            prediction = self.__model.result["prediction"]
+            probability = int(self.__model.result["probability"] * 100)
+            success = self.__model.save_report(path, self.__model.path, prediction, probability, lang="hu")
             if success:
                 tkinter.messagebox.showinfo(
                     parent=self.__view,
@@ -167,6 +168,7 @@ class Controller(object):
         :return: None
         """
 
+        self.__view.result_label.configure(text="Eredmény:\n")
         self.__view.result_label["bootstyle"] = "primary-outline-toolbutton"
         self.__view.prob_meter["bootstyle"] = "primary"
         self.__view.prob_meter.configure(amountused=0)
