@@ -7,4 +7,4 @@ Our achitecture consist of 2 clients 💻 and a server 📁, that is responsible
 
 In the following video, you can check our architechture in action. 😉
 
-...
+https://user-images.githubusercontent.com/79216014/204043178-42151184-71fa-477f-8885-0e07859ba242.mp4
