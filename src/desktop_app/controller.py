@@ -1,4 +1,5 @@
 import threading
+import webbrowser
 import tkinter.messagebox
 
 from model import Model
@@ -47,6 +48,7 @@ class Controller(object):
         """
 
         self.__view.upload_btn.configure(command=self.__upload_button_clicked)
+        self.__view.more_btn.configure(command=self.__more_info_button_clicked)
         self.__view.report_btn.configure(command=self.__generate_report_button_clicked)
 
     def __upload_button_clicked(self) -> None:
@@ -111,8 +113,16 @@ class Controller(object):
         self.__view.progress_bar.configure(value=0, mode="determinate")
         self.__view.upload_btn.configure(state=NORMAL)
 
-    def __more_info_button_clicked(self):
-        pass
+    def __more_info_button_clicked(self) -> None:
+        """
+        Opens a new tab in browser and searches for prediction result.
+
+        :return: None
+        """
+
+        prediction = self.__model.result["prediction"]
+        url = "https://www.google.com.tr/search?q={}".format(prediction)
+        webbrowser.open_new_tab(url)
 
     def __generate_report_button_clicked(self) -> None:
         """
