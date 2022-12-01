@@ -109,7 +109,7 @@ class Model:
             pdf.set_text_color(0, 0, 0)
             pdf.set_x(m)
             pdf.set_y(23)
-            pdf.cell(page_width - 2 * m, 15, "Report", ln=1, align="C")
+            pdf.cell(page_width - 2 * m, 15, "Riport", ln=1, align="C")
 
             # Image
             image = cv2.imread(skin_image_path)

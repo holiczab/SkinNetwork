@@ -105,8 +105,8 @@ class Controller(object):
             # Error popup
             tkinter.messagebox.showerror(
                 parent=self.__view,
-                title="Error",
-                message="Could not classify!"
+                title="Hiba!",
+                message="Nem sikerült az azonosítás!"
             )
 
         self.__view.progress_bar.stop()
@@ -121,7 +121,7 @@ class Controller(object):
         """
 
         prediction = self.__model.result["prediction"]
-        url = "https://www.google.com.tr/search?q={}".format(prediction)
+        url = "https://www.google.com/search?q={}".format(prediction)
         webbrowser.open_new_tab(url)
 
     def __generate_report_button_clicked(self) -> None:
@@ -139,14 +139,14 @@ class Controller(object):
             if success:
                 tkinter.messagebox.showinfo(
                     parent=self.__view,
-                    title="Success",
-                    message="PDF Report generated successfully!"
+                    title="Siker!",
+                    message="A PDF riport létrehozása sikeres!"
                 )
             else:
                 tkinter.messagebox.showerror(
                     parent=self.__view,
-                    title="Error",
-                    message="Could not generate PDF Report!"
+                    title="Hiba!",
+                    message="A PDF riport létrehozása sikertelen!"
                 )
 
     def __update_labels(self, prediction: str, confidence: float) -> None:

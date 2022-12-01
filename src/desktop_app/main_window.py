@@ -81,14 +81,14 @@ class MainWindow(ttk.Window):
         """
 
         filetypes = (
-            ("JPG files", "*.jpg"),
-            ("PNG files", "*.png"),
-            ("All files", "*.*")
+            ("JPG fájlok", "*.jpg"),
+            ("PNG fájlok", "*.png"),
+            ("Minden fájl", "*.*")
         )
 
         filename = fd.askopenfilename(
             parent=self,
-            title="Open file",
+            title="Megnyitás",
             initialdir="../",
             filetypes=filetypes,
         )
@@ -103,13 +103,13 @@ class MainWindow(ttk.Window):
         """
 
         filetypes = (
-            ("PDF files", "*.pdf"),
-            ("All files", "*.*")
+            ("PDF fájlok", "*.pdf"),
+            ("Minden fájl", "*.*")
         )
 
         path = fd.asksaveasfilename(
             parent=self,
-            title="Save file",
+            title="Mentés",
             initialdir="../",
             filetypes=filetypes,
             defaultextension="pdf"
