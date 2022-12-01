@@ -121,7 +121,7 @@ class Controller(object):
         """
 
         prediction = self.__model.result["prediction"]
-        url = "https://www.google.com/search?q={}".format(prediction)
+        url = f"https://www.google.com/search?q={prediction}"
         webbrowser.open_new_tab(url)
 
     def __generate_report_button_clicked(self) -> None:
@@ -158,7 +158,7 @@ class Controller(object):
         :return: None
         """
 
-        self.__view.result_label.configure(text="Eredmény:\n{}".format(prediction))
+        self.__view.result_label.configure(text=f"Eredmény:\n{prediction}")
         self.__view.prob_meter.configure(amountused=int(confidence * 100))
 
         if confidence >= 0.9:
@@ -168,7 +168,7 @@ class Controller(object):
         else:
             bootstyle = "success"
 
-        self.__view.result_label["bootstyle"] = "{}-outline-toolbutton".format(bootstyle)
+        self.__view.result_label["bootstyle"] = f"{bootstyle}-outline-toolbutton"
         self.__view.prob_meter["bootstyle"] = bootstyle
 
     def __reset_results(self) -> None:

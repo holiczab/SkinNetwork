@@ -128,8 +128,8 @@ class Model:
             confidence_text_lang = ["Confidence", "Bizonyosság"][lang_index]
 
             image_class_text = image_class
-            result_text = result_text_lang + ": {}".format(image_class_text)
-            confidence_text = confidence_text_lang + ": {}%".format(confidence)
+            result_text = result_text_lang + f": {image_class_text}"
+            confidence_text = confidence_text_lang + f": {confidence}%"
 
             pdf.multi_cell(real_page_width, 15, result_text)
             pdf.multi_cell(real_page_width, 15, confidence_text)
