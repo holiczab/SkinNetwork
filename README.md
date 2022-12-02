@@ -26,7 +26,7 @@ Or in this document. 😉
 
 1.  **Open _Anaconda Prompt_:** navigate to the application directory.
 2.  **Activate environment:** `conda activate szofttech`.
-3.  **Run the application:** `python __main__.py`.
+3.  **Run the application:** `python main.py`.
 
 - `ttkbootstrap`
 	- GitHub: https://github.com/israel-dryer/ttkbootstrap
