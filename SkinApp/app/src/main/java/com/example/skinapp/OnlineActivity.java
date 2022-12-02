@@ -84,6 +84,7 @@ public class OnlineActivity extends AppCompatActivity {
     public String CURRENT_PDF="";
     TextView name,percentage,gyogy,leiras;
     ProgressBar progressBar;
+    String valuee="";
 
     public static String encodeTobase64(Bitmap image) {
         Bitmap immagex=image;
@@ -118,7 +119,7 @@ public class OnlineActivity extends AppCompatActivity {
                 imageStream = this.getContentResolver().openInputStream(imageUri);
                 Bitmap yourSelectedImage = BitmapFactory.decodeStream(imageStream);
                 jsonString = new JSONObject().put("image", encodeTobase64(yourSelectedImage));
-                postRequest(postUrl, String.valueOf(jsonString));
+                postRequest(postUrl, String.valueOf(jsonString),"D");
             } catch (JSONException | IOException e) {
                 e.printStackTrace();
             }
@@ -128,15 +129,46 @@ public class OnlineActivity extends AppCompatActivity {
             kep.setImageBitmap(bitmap);
             try {
                 jsonString = new JSONObject().put("image", encodeTobase64(bitmap));
-                postRequest(postUrl, String.valueOf(jsonString));
+                postRequest(postUrl, String.valueOf(jsonString),"D");
             } catch (JSONException | IOException e) {
                 e.printStackTrace();
             }
         }
 
     }
+    public void TestingDetection(){
+        Strings s=new Strings();
 
-    void postRequest(String postUrl, String postBody) throws IOException {
+        //Black picture testing
+        try {
+            jsonString = new JSONObject().put("image", s.first);
+            postRequest(postUrl, String.valueOf(jsonString),"T");
+        } catch (JSONException | IOException e) { e.printStackTrace(); }
+        if(percentage.getText().toString().equals("0%")) Log.d("TestingDetection","#1 - Testing: Black Picture Test Correct!");
+        else Log.d("TestingDetection","#1 - Testing: Black Picture Test Failed!");
+
+        //0% Skin desease testing
+        try {
+            jsonString = new JSONObject().put("image", s.second);
+            postRequest(postUrl, String.valueOf(jsonString),"T");
+        } catch (JSONException | IOException e) { e.printStackTrace(); }
+        if(percentage.getText().toString().equals("0%")) Log.d("TestingDetection","#2 - Testing: 0 % Skin desease Test Correct!");
+        else Log.d("TestingDetection","#2 - Testing: 0 % Skin desease Test Failed!");
+
+        //Melanocytic nevi Skin desease testing
+        try {
+            jsonString = new JSONObject().put("image", s.third);
+            postRequest(postUrl, String.valueOf(jsonString),"T");
+        } catch (JSONException | IOException e) { e.printStackTrace(); }
+        if(valuee.equals("0.0")) Log.d("TestingDetection","#3 - Testing: Melanocytic nevi Test Failed!");
+        else Log.d("TestingDetection","#3 - Testing: Melanocytic nevi Test Correct!");
+
+        percentage.setText("-");
+    }
+
+
+
+    public void postRequest(String postUrl, String postBody,String type) throws IOException {
 
         OkHttpClient client = new OkHttpClient();
         RequestBody body = RequestBody.create(JSON, postBody);
@@ -169,10 +201,13 @@ public class OnlineActivity extends AppCompatActivity {
                             JSONObject myObject = new JSONObject(response.body().string());
                             Log.i("Mytag",myObject.get("prediction").toString());
                             Log.i("Mytag",myObject.get("probability").toString());
-                            name.setText(myObject.get("prediction").toString());
-                            percentage.setText(((Math.floor(Double.parseDouble(String.valueOf(myObject.get("probability"))) * 100) / 100)*100 +" %").replace(".0 %"," %"));
-                            progressBar.setProgress((int) ((Math.floor(Double.parseDouble(String.valueOf(myObject.get("probability"))) * 100) / 100)*100));
-                            legyogy(myObject.get("prediction").toString());
+                            valuee=String.valueOf(myObject.get("probability"));
+                            if(type!="T") {
+                                percentage.setText(((Math.floor(Double.parseDouble(String.valueOf(myObject.get("probability"))) * 100) / 100) * 100 + " %").replace(".0 %", " %"));
+                                name.setText(myObject.get("prediction").toString());
+                                progressBar.setProgress((int) ((Math.floor(Double.parseDouble(String.valueOf(myObject.get("probability"))) * 100) / 100) * 100));
+                                legyogy(myObject.get("prediction").toString());
+                            }
 
                         } catch (JSONException | IOException e) {
                             e.printStackTrace();
@@ -256,7 +291,9 @@ public class OnlineActivity extends AppCompatActivity {
                 }
             }
         };
-
+        //--------------------
+        TestingDetection();
+        //--------------------
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -379,7 +416,6 @@ public class OnlineActivity extends AppCompatActivity {
                 pdfDocument.close();
             }
         });
-
     }
     private boolean checkPermission() {
         // checking of permissions.

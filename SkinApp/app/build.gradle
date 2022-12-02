@@ -53,4 +53,5 @@ dependencies {
     implementation 'androidx.camera:camera-video:1.1.0-beta01'
     implementation 'androidx.camera:camera-view:1.1.0-beta01'
     implementation 'androidx.camera:camera-extensions:1.1.0-beta01'
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
 }
