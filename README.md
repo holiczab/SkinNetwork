@@ -14,7 +14,7 @@ Or in this document. 😉
 
 [Demo anyag.pdf](https://github.com/holiczab/SkinNetwork/files/10132894/Demo.anyag.pdf)
 
-## Anaconda environment
+## Anaconda environment for *Desktop application*
 
 ### Installing Anaconda
 
